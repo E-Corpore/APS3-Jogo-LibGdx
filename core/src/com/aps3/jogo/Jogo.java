@@ -1,5 +1,6 @@
 package com.aps3.jogo;
 
+import com.aps3.jogo.screens.Play;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -19,43 +20,41 @@ public class Jogo extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture img;
 
-	protected OrthographicCamera camera;
 	protected Viewport viewport;
 
 	public Jogo() {
-		instance = this;
 	}
 	
 	@Override
 	public void create () {
-		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
-
-		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		camera.setToOrtho(false);
-		viewport = new FillViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
-
+		setScreen(new Play());
 	}
 
 	@Override
 	public void render () {
-		ScreenUtils.clear(1, 0, 0, 1);
-		batch.begin();
-		batch.draw(img, 0, 0);
-		batch.end();
+        super.render();
 	}
 	@Override
 	public void resize(int width, int height) {
-		viewport.update(width, height, true);
-		//viewport.update(width, height, true);
+        super.resize(width, height);
 	}
 	
 	@Override
 	public void dispose () {
-		batch.dispose();
-		img.dispose();
+        super.dispose();
 	}
-	public static Jogo getInstance() {
+
+    @Override
+    public void pause() {
+        super.pause();
+    }
+
+    @Override
+    public void resume() {
+        super.resume();
+    }
+
+    public static Jogo getInstance() {
 		return instance;
 	}
 }
