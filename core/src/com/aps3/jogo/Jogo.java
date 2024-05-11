@@ -1,20 +1,12 @@
 package com.aps3.jogo;
 
-import com.aps3.jogo.screens.Play;
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.aps3.jogo.Telas.Play;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.FillViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import javax.swing.*;
-
-public class Jogo extends ApplicationAdapter {
+public class Jogo extends Game {
 	private static Jogo instance;
 	public static final boolean DEBUG = true;
 	SpriteBatch batch;
