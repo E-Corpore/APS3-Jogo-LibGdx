@@ -1,34 +1,29 @@
 package com.aps3.jogo.Entidades;
 
+import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.ScreenUtils;
 
-public class Player extends Sprite {
-    private Vector2 velocidade = new Vector2();
-    private float speed = 60 * 2, gravity =60 * 1.8f;
 
-    public Player(Sprite sprite) {
-        super(sprite);
+public class Player extends SpriteBatch{
+    //public SpriteBatch batch;
+    private TextureAtlas textureAtlas;
+    public Animation animation;
+
+
+    public Player(){
+        //batch = new SpriteBatch();
+        textureAtlas = new TextureAtlas(Gdx.files.internal("frente.atlas"));
+
+        animation = new Animation(0f, textureAtlas.getRegions());
+
     }
 
-    public void draw(SpriteBatch spriteBatch) {
-        update(Gdx.graphics.getDeltaTime());
-        super.draw(spriteBatch);
-    }
-    public void update(float delta){
-        velocidade.x -= gravity * speed;
-
-
-        if (velocidade.y > speed){
-            velocidade.y = speed;
-        } else if (velocidade.x < -speed){
-            velocidade.x = -speed;
-        }
-
-        setX(getX() + velocidade.x * speed);
-        setY(getY() + velocidade.y * speed);
-    }
 }
