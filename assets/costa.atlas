@@ -1,11 +1,11 @@
-frente.png
+costa.png
 size:256,128
 repeat:none
-frente1
+costa1
 bounds:0,0,48,90
-frente2
+costa2
 bounds:96,0,48,90
-frente3
+costa3
 bounds:48,0,48,90
-frente4
+costa4
 bounds:144,0,48,90

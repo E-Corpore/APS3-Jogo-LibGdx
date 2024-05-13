@@ -20,50 +20,30 @@ public class Jogo extends Game {
 	//private static Jogo instance;
 	//public static final boolean DEBUG = true;
 
-	//private TextureAtlas textureAtlas;
-	//public Animation animation;
-	private float elapsedTime = 0f ;
-	Player player;
-
-	protected Viewport viewport;
-	SpriteBatch batch;
+	//protected Viewport viewport;
 
 	public Jogo() {
+
 	}
 	
 	@Override
 	public void create () {
 		setScreen(new Play());
-		//setScreen(new Player());
-		//batch = new SpriteBatch();
-		//player = new Player();
-		//textureAtlas = new TextureAtlas(Gdx.files.internal("frente.atlas"));
-
-		//animation = new Animation(1f/5f, textureAtlas.getRegions());
 	}
 
 	@Override
 	public void render () {
-		/*
-		elapsedTime += Gdx.graphics.getDeltaTime();
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		batch.draw((TextureRegion) player.animation.getKeyFrame(elapsedTime,true), 0, 0);
-		batch.end();
-
-		 */
 		super.render();
 	}
 	@Override
 	public void resize(int width, int height) {
-        super.resize(width, height);
+
+		super.resize(width, height);
 	}
 	
 	@Override
 	public void dispose () {
         super.dispose();
-		batch.dispose();
-
 	}
 
     @Override
@@ -80,5 +60,5 @@ public class Jogo extends Game {
 		//return instance;
 	}
 
- */
+*/
 }
