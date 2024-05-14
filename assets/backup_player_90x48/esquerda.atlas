@@ -2,10 +2,10 @@ esquerda.png
 size:256,128
 repeat:none
 lado-esquerdo1
-bounds:0,0,36,69
+bounds:96,0,48,90
 lado-esquerdo2
-bounds:36,1,36,68
+bounds:0,0,48,90
 lado-esquerdo3
-bounds:108,1,36,68
+bounds:144,0,48,90
 lado-esquerdo4
-bounds:72,1,36,68
+bounds:48,0,48,90
