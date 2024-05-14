@@ -18,8 +18,10 @@ public class Player extends SpriteBatch{
     private TextureAtlas textureAtlasCosta;
     private TextureAtlas textureAtlasDireita;
     private TextureAtlas textureAtlasEsquerda;
-    public Animation animation;
-    public int largura=48,altura=90;
+    private Animation animation;
+    private int largura=36,altura=68;
+    private float x=2328,y=1965;
+
 
 
     public Player(){
@@ -44,4 +46,42 @@ public class Player extends SpriteBatch{
         animation = new Animation(0f, textureAtlasEsquerda.getRegions());
     }
 
+    public int getAltura() {
+        return altura;
+    }
+
+    public int getLargura() {
+        return largura;
+    }
+
+    public void setAltura(int altura) {
+        this.altura = altura;
+    }
+
+    public void setLargura(int largura) {
+        this.largura = largura;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public void andarX(float v) {
+        this.x = x+v;
+    }
+    public float getY() {
+        return y;
+    }
+
+    public void andarY(float v) {
+        this.y = y+ v;
+    }
+
+    public Animation getAnimation() {
+        return animation;
+    }
+
+    public void setAnimation(Animation animation) {
+        this.animation = animation;
+    }
 }

@@ -1,6 +1,7 @@
 package com.aps3.jogo.Telas;
 
 //import com.aps3.jogo.Entidades.Player;
+import com.aps3.jogo.Controles.Colisao;
 import com.aps3.jogo.Controles.Entrada;
 import com.aps3.jogo.Entidades.Player;
 import com.badlogic.gdx.Gdx;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
@@ -21,12 +23,12 @@ public class Play implements Screen{
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera camera;
     Player player;
-    float playerX,playerY;
+    //float playerX,playerY;
     Vector3 posicaoPlayer;
     float playerXtela,playerYtela;
     boolean andando = false;
     private float elapsedTime = 0f;
-    private int velocidade = 3;
+    private int velocidade = 1;
     Entrada processor = new Entrada();
     private int largura,altura;
     private float cameraX,cameraY;
@@ -35,7 +37,16 @@ public class Play implements Screen{
     private boolean foraBordaDireita;
     private boolean foraBordaEsquerda;
 
-    public void show(){
+    //variaveis para detectar colisão
+    private TiledMapTileLayer camadaCasas;
+    //private float tileWidth,tileHeight;
+    private TiledMapTileLayer.Cell cellCasaDireita,cellCasaEsquerda,cellCasaBaixo,cellCasaCima;
+    private int cellX,cellY;
+    //rivate boolean colisaoCasaDireita,colisaoCasaEsquerda,colisaoCasaBaixo,colisaoCasaCima;
+    private Colisao colisaoCasa = new Colisao();
+
+
+    public void show() {
         map = new TmxMapLoader().load("mapa.tmx");
         renderer = new OrthogonalTiledMapRenderer(map);
         camera = new OrthographicCamera();
@@ -43,12 +54,56 @@ public class Play implements Screen{
         largura = Gdx.graphics.getWidth();
         altura = Gdx.graphics.getHeight();
 
-        //camera.setToOrtho(false, 1200, 800);
+        //map.getLayers().get(3).getObjects().get(1);
+
         player = new Player();
-        playerX = 2328;
-        playerY = 1965;
-        camera.position.x = playerX;
-        camera.position.y = playerY;
+
+        camera.position.x = player.getX();
+        camera.position.y = player.getY();
+
+        camadaCasas = (TiledMapTileLayer) map.getLayers().get("Casas");
+
+        // Acessar a camada de colisão
+        cellX = (int)player.getX()/128;
+        cellY = (int)player.getY()/128;
+        /*
+        cellCasa = camadaCasas.getCell(cellX, cellY);
+        //System.out.println("Casa: " + cellX + " - " + cellY);
+
+        if (cellCasa != null) {
+            System.out.println("Casa: " + cellX + " - " + cellY);
+        } else{
+            System.out.println("Nada: x:" + cellX +  " - y:" + cellY);
+        }
+
+         */
+
+
+
+        /*
+        // Iterar sobre cada célula na camada de colisão
+        for (int y = 0; y < camadaCasas.getHeight(); y++) {
+            for (int x = 0; x < camadaCasas.getWidth(); x++) {
+                cell = camadaCasas.getCell(x, y);
+                if (cell != null) {
+                    // Obter propriedades do tile
+                    int tileX = x; // posição x do tile
+                    int tileY = y; // posição y do tile
+                    int tileWidth = camadaCasas.getTileWidth(); // largura do tile
+                    int tileHeight = camadaCasas.getTileHeight(); // altura do tile
+
+                    // Aqui você pode fazer o que quiser com as propriedades do tile
+                    System.out.println("Tile em (" + tileX + ", " + tileY + ")");
+                    //System.out.println("Largura: " + tileWidth + ", Altura: " + tileHeight);
+                }
+            }
+        }
+
+         */
+
+
+        //cell = camadaCasas.getCell(cellX, cellY);
+
         camera.update();
     }
   public void render(float v){
@@ -57,74 +112,82 @@ public class Play implements Screen{
     elapsedTime += Gdx.graphics.getDeltaTime();
     Gdx.input.setInputProcessor(processor);
 
-    if(processor.cima && playerY<4096-player.altura){
-        player.costa();
-        playerY+=velocidade;
 
-        if (foraBordaCima && (playerY+player.altura/2<(4096 - altura/3))) {
+    if(processor.cima && player.getY()<4096-player.getAltura()){
+        player.costa();
+        if (!colisaoCasa.cima(player,camadaCasas)){
+            player.andarY(velocidade);
+        }
+
+        if (foraBordaCima && (player.getY()+player.getAltura()/2<(4096 - altura/3))) {
             camera.translate(0,velocidade);
             cameraY = camera.position.y;
             camera.update();
             player.setProjectionMatrix(camera.combined);
         }
-        System.out.println(playerX+" - "+playerY);
     }
-      //if(Gdx.input.isKeyPressed(Input.Keys.DOWN)){
-      if(processor.baixo && playerY > 0){
+      if(processor.baixo && player.getY() > 0){
           player.frente();
-          playerY-=velocidade;
-          if (foraBordaBaixo && (playerY+player.altura/2)>(altura/3)) {
+          if (!colisaoCasa.baixo(player,camadaCasas)) {
+              player.andarY(-velocidade);;
+          }
+          if (foraBordaBaixo && (player.getY()+player.getAltura()/2)>(altura/3)) {
               camera.translate(0,-velocidade);
               cameraY = camera.position.y;
               camera.update();
               player.setProjectionMatrix(camera.combined);
           }
       }
-    if(processor.direita && playerX < 4096 -player.largura){
+      if(processor.esquerda && player.getX() > 0 ){
+          player.esquerda();
+          if (!colisaoCasa.esquerda(player,camadaCasas)) {
+              player.andarX(-velocidade);
+          }
+          if (foraBordaEsquerda && (player.getX()+player.getLargura()/2)>(largura/3)){
+              camera.translate(-velocidade,0);
+              cameraX = camera.position.x;
+              camera.update();
+              player.setProjectionMatrix(camera.combined);
+          }
+      }
+
+    if(processor.direita && player.getX() < 4096 -player.getLargura()){
         player.direita();
-        playerX+=velocidade;
-        if (foraBordaDireita && (playerX+player.largura/2<(4096 - largura/3))) {
+        if (!colisaoCasa.direita(player,camadaCasas)) {
+            player.andarX(velocidade);
+        }
+        if (foraBordaDireita && (player.getX()+player.getLargura()/2<(4096 - largura/3))) {
             camera.translate(velocidade,0);
             cameraX = camera.position.x;
             camera.update();
             player.setProjectionMatrix(camera.combined);
         }
     }
-    if(processor.esquerda && playerX > 0){
-        player.esquerda();
-        playerX-=velocidade;
-        if (foraBordaEsquerda && (playerX+player.largura/2)>(largura/3)){
-            camera.translate(-velocidade,0);
-            cameraX = camera.position.x;
-            camera.update();
-            player.setProjectionMatrix(camera.combined);
-        }
-        //System.out.println("teste: " + (playerX+24>((largura/3)) );
-    }
+
     if (processor.cima || processor.baixo || processor.direita || processor.esquerda){
-        player.animation.setFrameDuration(0.15f);
-        posicaoPlayer = camera.project(new Vector3(playerX, playerY,0));
+        player.getAnimation().setFrameDuration(0.15f);
+        posicaoPlayer = camera.project(new Vector3(player.getX(), player.getY(),0));
         playerYtela = posicaoPlayer.y;
         playerXtela = posicaoPlayer.x;
     }else {
-        player.animation.setFrameDuration(0f);
+        player.getAnimation().setFrameDuration(0f);
     }
-      if (playerYtela+player.altura/2 > altura*2/3){
+      if (playerYtela+player.getAltura()/2 > altura*2/3){
           foraBordaCima = true;
       }else {
           foraBordaCima = false;
       }
-      if (playerYtela+player.altura/2 < altura/3){
+      if (playerYtela+player.getAltura()/2 < altura/3){
           foraBordaBaixo = true;
       }else {
           foraBordaBaixo = false;
       }
-      if (playerXtela+player.largura/2>largura*2/3){
+      if (playerXtela+player.getLargura()/2>largura*2/3){
           foraBordaDireita = true;
       }else {
           foraBordaDireita = false;
       }
-      if (playerXtela+player.largura/2 < largura/3){
+      if (playerXtela+player.getLargura()/2 < largura/3){
           foraBordaEsquerda = true;
       }else {
           foraBordaEsquerda = false;
@@ -133,7 +196,7 @@ public class Play implements Screen{
       renderer.setView(camera);
       renderer.render();
       player.begin();
-      player.draw((TextureRegion) player.animation.getKeyFrame(elapsedTime,true), playerX, playerY);
+      player.draw((TextureRegion) player.getAnimation().getKeyFrame(elapsedTime,true), player.getX(), player.getY());
       player.end();
   }
 

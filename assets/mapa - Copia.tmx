@@ -687,7 +687,7 @@
   <image source="img/rua2.png" width="129" height="129"/>
  </tileset>
  <tileset firstgid="97" name="rua3" tilewidth="128" tileheight="128" tilecount="1" columns="1">
-  <image source="img/rua3.png" width="128" height="128"/>
+  <image source="img/rua3.png" width="129" height="129"/>
  </tileset>
  <layer id="1" name="Fundo" width="32" height="32" locked="1">
   <data encoding="csv">
@@ -761,7 +761,7 @@
 0,0,0,47,48,0,0,47,48,0,47,48,0,0,47,48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <layer id="17" name="Ruas" width="32" height="32">
+ <layer id="17" name="Ruas" width="32" height="32" locked="1">
   <data encoding="csv">
 0,0,1610612762,0,0,0,1610612762,0,0,1610612762,0,0,0,0,0,0,1610612762,0,0,0,0,1610612762,0,0,0,0,0,0,0,0,0,0,
 0,0,1610612762,0,0,0,1610612762,0,0,1610612762,0,0,0,0,0,0,1610612762,0,0,0,0,1610612762,0,0,0,0,0,0,0,0,0,0,
