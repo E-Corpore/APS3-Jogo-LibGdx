@@ -7,11 +7,12 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-		config.setWindowedMode(1500, 900);
+		config.setWindowedMode(1024, 1024);
 		config.setResizable(true);
 		config.setTitle("APS3-Jogo-LibGdx");
 		new Lwjgl3Application(new Jogo(), config);
-
+	}
+	public void entrouMenu(){
 
 	}
 }

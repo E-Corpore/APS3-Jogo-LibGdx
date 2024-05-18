@@ -61,7 +61,7 @@ public class Play implements Screen{
         camera.position.x = player.getX();
         camera.position.y = player.getY();
 
-        camadaCasas = (TiledMapTileLayer) map.getLayers().get("Casas");
+        camadaCasas = (TiledMapTileLayer) map.getLayers().get("Colisao");
 
         // Acessar a camada de colisão
         cellX = (int)player.getX()/128;

@@ -1,6 +1,7 @@
 package com.aps3.jogo;
 
 import com.aps3.jogo.Entidades.Player;
+import com.aps3.jogo.Telas.Menu;
 import com.aps3.jogo.Telas.Play;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
@@ -28,7 +29,7 @@ public class Jogo extends Game {
 	
 	@Override
 	public void create () {
-		setScreen(new Play());
+		setScreen(new Menu(this));
 	}
 
 	@Override
