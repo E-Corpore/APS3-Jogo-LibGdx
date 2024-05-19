@@ -10,7 +10,7 @@ public class DesktopLauncher {
 	public static Lwjgl3ApplicationConfiguration config;
 	public DesktopLauncher(){
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-		config.setWindowedMode(600, 600);
+		config.setWindowedMode(1024, 900);
 		config.setResizable(true);
 		config.setTitle("APS3-Jogo-LibGdx");
 		new Lwjgl3Application(Jogo.getInstance(), config);

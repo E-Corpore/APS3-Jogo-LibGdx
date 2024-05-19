@@ -2,7 +2,10 @@ package com.aps3.jogo.Telas;
 
 import com.aps3.jogo.Controles.Colisao;
 import com.aps3.jogo.Controles.Entrada;
+import com.aps3.jogo.Controles.PosicaoLixo;
+import com.aps3.jogo.Entidades.Lixo;
 import com.aps3.jogo.Entidades.Player;
+import com.aps3.jogo.Entidades.tipoLixo;
 import com.aps3.jogo.Jogo;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -19,6 +22,10 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class Play implements Screen{
     //private final Jogo jogo;
     private TiledMap map;
@@ -30,7 +37,7 @@ public class Play implements Screen{
     float playerXtela,playerYtela;
     boolean andando = false;
     private float elapsedTime = 0f;
-    private int velocidade = 1;
+    private int velocidade = 10;
     Entrada entrada = new Entrada();
     private int largura,altura;
     private float cameraX,cameraY;
@@ -40,14 +47,14 @@ public class Play implements Screen{
     private boolean foraBordaEsquerda;
 
     //variaveis para detectar colisão
-    private TiledMapTileLayer camadaCasas;
+    private TiledMapTileLayer camadaColisao;
     //private float tileWidth,tileHeight;
-    private TiledMapTileLayer.Cell cellCasaDireita,cellCasaEsquerda,cellCasaBaixo,cellCasaCima;
     private int cellX,cellY;
     //rivate boolean colisaoCasaDireita,colisaoCasaEsquerda,colisaoCasaBaixo,colisaoCasaCima;
-    private Colisao colisaoCasa = new Colisao();
+    private Colisao colisao = new Colisao();
+    private Colisao colisaoLixo = new Colisao();
 
-    //Pausar jogo
+    // Pausar jogo
     private boolean pause=false;
     private SpriteBatch quadrado;
     private Texture transparencia;
@@ -57,6 +64,12 @@ public class Play implements Screen{
     private SpriteBatch btnReiniciar;
     private Texture texturaReiniciar;
     private int btnReiniciarX, btnReiniciarY;
+
+    // Adicionar lixos no mapa
+    private List<Lixo> lixos;
+    private PosicaoLixo posicaoLixos;
+    private TiledMapTileLayer camadaLixos;
+    Random aleatorio=new Random();
 
     public Play(){
 
@@ -76,7 +89,11 @@ public class Play implements Screen{
         camera.position.x = player.getX();
         camera.position.y = player.getY();
 
-        camadaCasas = (TiledMapTileLayer) map.getLayers().get("Colisao");
+        camadaColisao = (TiledMapTileLayer) map.getLayers().get("Colisao");
+        camadaLixos = (TiledMapTileLayer) map.getLayers().get("Lixos");
+
+        posicaoLixos = new PosicaoLixo(camadaLixos);
+        carregarLixos();
 
         // Acessar a camada de colisão
         cellX = (int)player.getX()/128;
@@ -90,25 +107,7 @@ public class Play implements Screen{
         btnMenuInicial = new SpriteBatch();
         btnReiniciar = new SpriteBatch();
 
-        /*
-        // Iterar sobre cada célula na camada de colisão
-        for (int y = 0; y < camadaCasas.getHeight(); y++) {
-            for (int x = 0; x < camadaCasas.getWidth(); x++) {
-                cell = camadaCasas.getCell(x, y);
-                if (cell != null) {
-                    // Obter propriedades do tile
-                    int tileX = x; // posição x do tile
-                    int tileY = y; // posição y do tile
-                    int tileWidth = camadaCasas.getTileWidth(); // largura do tile
-                    int tileHeight = camadaCasas.getTileHeight(); // altura do tile
 
-                    // Aqui você pode fazer o que quiser com as propriedades do tile
-                    System.out.println("Tile em (" + tileX + ", " + tileY + ")");
-                    //System.out.println("Largura: " + tileWidth + ", Altura: " + tileHeight);
-                }
-            }
-        }
-         */
         camera.update();
     }
   public void render(float v){
@@ -149,7 +148,7 @@ public class Play implements Screen{
         // Movimento para cima
         if (entrada.cima && player.getY() < 4096 - player.getAltura()) {
             player.costa();
-            if (!colisaoCasa.cima(player, camadaCasas)) {
+            if (!colisao.cima(player, camadaColisao)) {
                 player.andarY(velocidade);
             }
 
@@ -163,7 +162,7 @@ public class Play implements Screen{
         // Movimento para baixo
         if (entrada.baixo && player.getY() > 0) {
             player.frente();
-            if (!colisaoCasa.baixo(player, camadaCasas)) {
+            if (!colisao.baixo(player, camadaColisao)) {
                 player.andarY(-velocidade);
                 ;
             }
@@ -177,7 +176,7 @@ public class Play implements Screen{
         // Movimento para a esquerda
         if (entrada.esquerda && player.getX() > 0) {
             player.esquerda();
-            if (!colisaoCasa.esquerda(player, camadaCasas)) {
+            if (!colisao.esquerda(player, camadaColisao)) {
                 player.andarX(-velocidade);
             }
             if (foraBordaEsquerda && (player.getX() + player.getLargura() / 2) > (largura / 3)) {
@@ -190,7 +189,7 @@ public class Play implements Screen{
         // Movimento para a direita
         if (entrada.direita && player.getX() < 4096 - player.getLargura()) {
             player.direita();
-            if (!colisaoCasa.direita(player, camadaCasas)) {
+            if (!colisao.direita(player, camadaColisao)) {
                 player.andarX(velocidade);
             }
             if (foraBordaDireita && (player.getX() + player.getLargura() / 2 < (4096 - largura / 3))) {
@@ -218,6 +217,15 @@ public class Play implements Screen{
       player.draw((TextureRegion) player.getAnimation().getKeyFrame(elapsedTime,true), player.getX(), player.getY());
       player.end();
 
+      for(Lixo lixo:lixos){
+          System.out.println(lixo.getX() +" - "+lixo.getY());
+          lixo.begin();
+          lixo.draw(lixo.getImagem(), lixo.getX(), lixo.getY(),36,36);
+          lixo.end();
+          camera.update();
+          lixo.setProjectionMatrix(camera.combined);
+
+      }
       // Desenhar quadrado quando pausado
       if(pause){
           quadrado.begin();
@@ -246,11 +254,19 @@ public class Play implements Screen{
               voltarMenu();
           }
       }
-      
 
 
   }
 
+  private void carregarLixos(){
+      lixos = new ArrayList<Lixo>();
+      for(int i =0;i<10;i++){
+          tipoLixo[] tlixo = tipoLixo.values();
+          tipoLixo lixoAleatorio = tlixo[aleatorio.nextInt(tlixo.length)];
+         lixos.add(new Lixo(lixoAleatorio,posicaoLixos.retornaXY()));
+      }
+
+  }
     private void reiniciarJogo() {
         System.out.println("Reiniciando o Jogo");
         Jogo.getInstance().setScreen(new Play());
