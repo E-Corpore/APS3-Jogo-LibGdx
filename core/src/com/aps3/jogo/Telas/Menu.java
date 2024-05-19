@@ -14,13 +14,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+
 public class Menu implements Screen{
     private final Jogo jogo;
+    private Play play;
     private Stage stage;
     private Texture backgroundTexture;
     private SpriteBatch batch;
 
-    public Menu(final Jogo game) {
+    public Menu() {
+
         this.jogo = new Jogo();
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
@@ -54,7 +57,8 @@ public class Menu implements Screen{
         // Adicionar listeners aos botões
         playButton.addListener(e -> {
             if (playButton.isPressed()) {
-                game.setScreen(new Play()); // Mude para a tela do jogo
+                new Jogo();
+                Jogo.getInstance().setScreen(new Play()); // Mude para a tela do jogo
             }
             return true;
         });
@@ -72,10 +76,10 @@ public class Menu implements Screen{
         table.center();
         table.add(playButton).padBottom(20);
         table.row();
-        table.add(skinButton);
-        table.row();
-        table.add(lojaButton);
-        table.row();
+        //table.add(skinButton);
+        //table.row();
+        //table.add(lojaButton);
+        //table.row();
         table.add(tutorialButton);
         table.row();
         table.add(sairButton);

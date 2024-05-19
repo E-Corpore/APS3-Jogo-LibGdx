@@ -8,6 +8,7 @@ public class Entrada implements InputProcessor {
     public boolean baixo;
     public boolean direita;
     public boolean esquerda;
+    public boolean esc = false;
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.UP) {
@@ -28,6 +29,9 @@ public class Entrada implements InputProcessor {
 
     @Override
     public boolean keyUp(int keycode) {
+        if (keycode == Input.Keys.ESCAPE) {
+            esc = !esc;
+        }
         if (keycode == Input.Keys.UP) {
             cima = false;
         }
