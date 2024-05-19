@@ -4,6 +4,7 @@ import com.aps3.jogo.Controles.Colisao;
 import com.aps3.jogo.Controles.Entrada;
 import com.aps3.jogo.Controles.PosicaoLixo;
 import com.aps3.jogo.Entidades.Lixo;
+import com.aps3.jogo.Entidades.Mochila;
 import com.aps3.jogo.Entidades.Player;
 import com.aps3.jogo.Entidades.tipoLixo;
 import com.aps3.jogo.Jogo;
@@ -20,11 +21,16 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
 
 public class Play implements Screen{
     //private final Jogo jogo;
@@ -37,7 +43,7 @@ public class Play implements Screen{
     float playerXtela,playerYtela;
     boolean andando = false;
     private float elapsedTime = 0f;
-    private int velocidade = 10;
+    private int velocidade = 5;
     Entrada entrada = new Entrada();
     private int largura,altura;
     private float cameraX,cameraY;
@@ -48,11 +54,8 @@ public class Play implements Screen{
 
     //variaveis para detectar colisão
     private TiledMapTileLayer camadaColisao;
-    //private float tileWidth,tileHeight;
-    private int cellX,cellY;
-    //rivate boolean colisaoCasaDireita,colisaoCasaEsquerda,colisaoCasaBaixo,colisaoCasaCima;
     private Colisao colisao = new Colisao();
-    private Colisao colisaoLixo = new Colisao();
+    private Rectangle playerRec; // Colisão com o lixo
 
     // Pausar jogo
     private boolean pause=false;
@@ -69,7 +72,12 @@ public class Play implements Screen{
     private List<Lixo> lixos;
     private PosicaoLixo posicaoLixos;
     private TiledMapTileLayer camadaLixos;
-    Random aleatorio=new Random();
+    private Random aleatorio=new Random();
+
+    // Adicionando mochila
+    private Mochila mochila;
+    private List<Lixo> itensMochila;
+
 
     public Play(){
 
@@ -84,20 +92,13 @@ public class Play implements Screen{
 
         //map.getLayers().get(3).getObjects().get(1);
 
+        // Player
         player = new Player();
-
         camera.position.x = player.getX();
         camera.position.y = player.getY();
 
         camadaColisao = (TiledMapTileLayer) map.getLayers().get("Colisao");
-        camadaLixos = (TiledMapTileLayer) map.getLayers().get("Lixos");
-
-        posicaoLixos = new PosicaoLixo(camadaLixos);
-        carregarLixos();
-
-        // Acessar a camada de colisão
-        cellX = (int)player.getX()/128;
-        cellY = (int)player.getY()/128;
+        playerRec = new Rectangle(player.getX(), player.getY(),player.getLargura(), player.getAltura());
 
         // Itens para pausa
         transparencia = new Texture("menu/quadradoTransparente.png");
@@ -107,6 +108,13 @@ public class Play implements Screen{
         btnMenuInicial = new SpriteBatch();
         btnReiniciar = new SpriteBatch();
 
+        // Lixos
+        camadaLixos = (TiledMapTileLayer) map.getLayers().get("Lixos");
+        posicaoLixos = new PosicaoLixo(camadaLixos);
+        carregarLixos();
+
+        mochila = new Mochila();
+        itensMochila = new ArrayList<Lixo>();
 
         camera.update();
     }
@@ -118,7 +126,7 @@ public class Play implements Screen{
     Gdx.input.setInputProcessor(entrada);
     // Quando pressionado ESC
       if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-          pause = !pause; // Alterna o estado de escPressed
+          pause = !pause; // Alterna o estado de pause
       }
 
       // Verificando se passou das bordas
@@ -164,7 +172,6 @@ public class Play implements Screen{
             player.frente();
             if (!colisao.baixo(player, camadaColisao)) {
                 player.andarY(-velocidade);
-                ;
             }
             if (foraBordaBaixo && (player.getY() + player.getAltura() / 2) > (altura / 3)) {
                 camera.translate(0, -velocidade);
@@ -213,19 +220,52 @@ public class Play implements Screen{
 
       renderer.setView(camera);
       renderer.render();
+      for(Lixo lixo:lixos){
+          //System.out.println(lixo.getX() +" - "+lixo.getY());
+          lixo.begin();
+          lixo.draw(lixo.getImagem(), lixo.getX(), lixo.getY(),36,36);
+          lixo.end();
+          //camera.update();
+          lixo.setProjectionMatrix(camera.combined);
+      }
       player.begin();
       player.draw((TextureRegion) player.getAnimation().getKeyFrame(elapsedTime,true), player.getX(), player.getY());
       player.end();
 
+      playerRec = new Rectangle(player.getX(),player.getY(),player.getLargura(),player.getAltura());
+      //playerRec.x = player.getX();
+      //playerRec.y = player.getY();
+/*
       for(Lixo lixo:lixos){
-          System.out.println(lixo.getX() +" - "+lixo.getY());
+          if (lixo.getRectangle().overlaps(playerRec)){
+              pegarLixo(lixo);
+          }
+      }
+
+ */
+      if(itensMochila.size()<5) {
+          Iterator<Lixo> iterator = lixos.iterator();
+          while (iterator.hasNext()) {
+              Lixo lixo = iterator.next();
+              if (lixo.getRectangle().overlaps(playerRec)) {
+                  pegarLixo(lixo);
+                  iterator.remove();
+              }
+          }
+      }
+
+      mochila.begin();
+      mochila.draw(mochila.getImagem(), largura/2-190, 20);
+      mochila.end();
+
+      for(Lixo lixo:itensMochila){
+          //System.out.println(lixo.getX() +" - "+lixo.getY());
           lixo.begin();
           lixo.draw(lixo.getImagem(), lixo.getX(), lixo.getY(),36,36);
           lixo.end();
-          camera.update();
-          lixo.setProjectionMatrix(camera.combined);
-
+          //lixo.setProjectionMatrix(camera.combined);
       }
+
       // Desenhar quadrado quando pausado
       if(pause){
           quadrado.begin();
@@ -242,31 +282,35 @@ public class Play implements Screen{
           btnReiniciar.end();
 
       }
-      if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){
+      if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) & pause){
           float mouseX = Gdx.input.getX();
           float mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
           if (mouseX >= btnReiniciarX && mouseX <= btnReiniciarX + texturaReiniciar.getWidth() && mouseY >= btnReiniciarY && mouseY <= btnReiniciarY + texturaReiniciar.getHeight()) {
               reiniciarJogo();
           }
           if (mouseX >= btnMenuX && mouseX <= btnMenuX + texturaReiniciar.getWidth() && mouseY >= btnReiniciarY && mouseY <= btnReiniciarY + texturaReiniciar.getHeight()) {
-              // Chama a função desejada
-              System.out.println("Menu");
               voltarMenu();
           }
       }
-
-
   }
+    private void carregarLixos(){
+        lixos = new ArrayList<Lixo>();
+        for(int i =0;i<40;i++){
+            tipoLixo[] tlixo = tipoLixo.values();
+            tipoLixo lixoAleatorio = tlixo[aleatorio.nextInt(tlixo.length)];
+            lixos.add(new Lixo(lixoAleatorio,posicaoLixos.retornaXY()));
+        }
+    }
+    private void pegarLixo(Lixo lixo){
+        System.out.println("pegou?"+" - "+lixo.getX()+" - "+lixo.getY());
+        //lixos.remove(lixo);
+        itensMochila.add(lixo);
+        lixo.setX((largura/2-190)+(itensMochila.indexOf(lixo)*61)+77);
+        //lixo.setX(100);
+        lixo.setY(32);
+        lixo.getProjectionMatrix().setToOrtho2D(0, 0, largura, altura);
 
-  private void carregarLixos(){
-      lixos = new ArrayList<Lixo>();
-      for(int i =0;i<10;i++){
-          tipoLixo[] tlixo = tipoLixo.values();
-          tipoLixo lixoAleatorio = tlixo[aleatorio.nextInt(tlixo.length)];
-         lixos.add(new Lixo(lixoAleatorio,posicaoLixos.retornaXY()));
-      }
-
-  }
+    }
     private void reiniciarJogo() {
         System.out.println("Reiniciando o Jogo");
         Jogo.getInstance().setScreen(new Play());
@@ -288,6 +332,14 @@ public class Play implements Screen{
         quadrado.dispose();
         quadrado = new SpriteBatch();
 
+        //mochila = new Mochila();
+        mochila.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
+        for(Lixo lixo:itensMochila){
+            lixo.setX((largura/2-190)+(itensMochila.indexOf(lixo)*61)+77);
+            lixo.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
+        }
+
+
         btnMenuInicial.dispose();
         btnMenuInicial = new SpriteBatch();
         btnMenuX=(largura/3)-(texturaMenuInicial.getWidth()/2);
@@ -298,13 +350,16 @@ public class Play implements Screen{
         btnReiniciarX =(largura*2/3)-(texturaReiniciar.getWidth()/2);
         btnReiniciarY =(altura/2)-(texturaReiniciar.getWidth()/2);
 
-
         //camera.position.x = width/
         //System.out.println("L: "+largura+" A: "+altura);
 
-
         camera.update();
+        /*
+        for(Lixo lixo:lixos){
+            lixo.setProjectionMatrix(camera.combined);
+        }
 
+         */
         player.setProjectionMatrix(camera.combined);
         //playerX =
     }

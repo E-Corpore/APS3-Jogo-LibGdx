@@ -21,8 +21,7 @@ public class Player extends SpriteBatch{
     private Animation animation;
     private int largura=36,altura=68;
     private float x=2328,y=1965;
-
-
+    private float anteriorX=2328,anteriorY=1965;
 
     public Player(){
         //batch = new SpriteBatch();
@@ -54,19 +53,12 @@ public class Player extends SpriteBatch{
         return largura;
     }
 
-    public void setAltura(int altura) {
-        this.altura = altura;
-    }
-
-    public void setLargura(int largura) {
-        this.largura = largura;
-    }
-
     public float getX() {
         return x;
     }
 
     public void andarX(float v) {
+        this.anteriorX = this.x;
         this.x = x+v;
     }
     public float getY() {
@@ -74,6 +66,7 @@ public class Player extends SpriteBatch{
     }
 
     public void andarY(float v) {
+        this.anteriorY = this.y;
         this.y = y+ v;
     }
 
