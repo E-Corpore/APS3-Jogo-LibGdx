@@ -195,9 +195,6 @@
  <tileset firstgid="26" name="rua1" tilewidth="128" tileheight="128" tilecount="1" columns="1">
   <image source="img/rua1.png" width="129" height="129"/>
  </tileset>
- <tileset firstgid="27" name="saco-lixo" tilewidth="128" tileheight="128" tilecount="0" columns="1">
-  <image source="img/saco-lixo.png" width="130" height="130"/>
- </tileset>
  <tileset firstgid="27" name="solar" tilewidth="128" tileheight="128" tilecount="9" columns="3">
   <image source="img/solar.png" width="391" height="391"/>
   <tile id="0">
