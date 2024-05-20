@@ -11,16 +11,16 @@ public class Entrada implements InputProcessor {
     public boolean esc = false;
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.UP) {
+        if (keycode == Input.Keys.UP || keycode == Input.Keys.W) {
             cima = true;
         }
-        if (keycode == Input.Keys.DOWN) {
+        if (keycode == Input.Keys.DOWN || keycode == Input.Keys.S) {
             baixo = true;
         }
-        if (keycode == Input.Keys.RIGHT) {
+        if (keycode == Input.Keys.RIGHT || keycode == Input.Keys.D) {
             direita = true;
         }
-        if (keycode == Input.Keys.LEFT) {
+        if (keycode == Input.Keys.LEFT || keycode == Input.Keys.A) {
             esquerda = true;
         }
 
@@ -46,6 +46,12 @@ public class Entrada implements InputProcessor {
         }
 
         return false;
+    }
+    public void limparTeclas(){
+        cima = false;
+        baixo = false;
+        direita = false;
+        esquerda = false;
     }
 
     @Override

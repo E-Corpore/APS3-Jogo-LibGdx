@@ -11,22 +11,11 @@ public class Lixo extends SpriteBatch{
     private Texture texturaLixo;
     private tipoLixo tipo;
     private Vector2 posicao= new Vector2();
-    private Texture metal1 = new Texture("img/tipo-lixo/metal1.png");
-    private Texture metal2 = new Texture("img/tipo-lixo/metal2.png");
-    private Texture papel1 = new Texture("img/tipo-lixo/papel1.png");
-    private Texture papel2 = new Texture("img/tipo-lixo/papel2.png");
-    private Texture plastico1 = new Texture("img/tipo-lixo/plastico1.png");
-    private Texture plastico2 = new Texture("img/tipo-lixo/plastico2.png");
-    private Texture vidro1 = new Texture("img/tipo-lixo/vidro1.png");
-    private Texture vidro2 = new Texture("img/tipo-lixo/vidro2.png");
-    private Texture organico1 = new Texture("img/tipo-lixo/organico1.png");
-    private Texture organico2 = new Texture("img/tipo-lixo/organico2.png");
-
     private Rectangle rectangle;
-
-    private Random aleatorio = new Random();
+    private String nome;
 
     public Lixo(tipoLixo tipo, Vector2 posicao){
+
         this.tipo = tipo;
         //this.posicao = posicao;
         this.posicao.x = (posicao.x*128)+46;
@@ -35,37 +24,48 @@ public class Lixo extends SpriteBatch{
         rectangle = new Rectangle(this.posicao.x, this.posicao.y, 36, 36);
     }
     private void iniciar(){
+        Texture metal1 = new Texture("img/tipo-lixo/metal1.png");
+        Texture metal2 = new Texture("img/tipo-lixo/metal2.png");
+        Texture papel1 = new Texture("img/tipo-lixo/papel1.png");
+        Texture papel2 = new Texture("img/tipo-lixo/papel2.png");
+        Texture plastico1 = new Texture("img/tipo-lixo/plastico1.png");
+        Texture plastico2 = new Texture("img/tipo-lixo/plastico2.png");
+        Texture vidro1 = new Texture("img/tipo-lixo/vidro1.png");
+        Texture vidro2 = new Texture("img/tipo-lixo/vidro2.png");
+        Texture organico1 = new Texture("img/tipo-lixo/organico1.png");
+        Texture organico2 = new Texture("img/tipo-lixo/organico2.png");
+        //Random aleatorio = new Random();
         switch (tipo) {
             case METAL:
-                if (aleatorio.nextInt(2) == 0) {
+                if (new Random().nextInt(2) == 0) {
                     this.texturaLixo = metal1;
                 }else {
                     this.texturaLixo = metal2;
                 }
                 break;
             case PAPEL:
-                if (aleatorio.nextInt(2) == 0) {
+                if (new Random().nextInt(2) == 0) {
                     this.texturaLixo = papel1;
                 }else {
                     this.texturaLixo = papel2;
                 }
                 break;
             case PLASTICO:
-                if (aleatorio.nextInt(2) == 0) {
+                if (new Random().nextInt(2) == 0) {
                     this.texturaLixo = plastico1;
                 }else {
                     this.texturaLixo = plastico2;
                 }
                 break;
             case VIDRO:
-                if (aleatorio.nextInt(2) == 0) {
+                if (new Random().nextInt(2) == 0) {
                     this.texturaLixo = vidro1;
                 }else {
                     this.texturaLixo = vidro2;
                 }
                 break;
             case ORGANICO:
-                if (aleatorio.nextInt(2) == 0) {
+                if (new Random().nextInt(2) == 0) {
                     this.texturaLixo = organico1;
                 }else {
                     this.texturaLixo = organico2;
@@ -91,7 +91,13 @@ public class Lixo extends SpriteBatch{
     public void setY(int y) {
         this.posicao.y = y;
     }
+    public tipoLixo getTipo() {
+        return tipo;
+    }
     public Rectangle getRectangle() {
         return this.rectangle;
+    }
+    public String getNome() {
+        return this.nome;
     }
 }

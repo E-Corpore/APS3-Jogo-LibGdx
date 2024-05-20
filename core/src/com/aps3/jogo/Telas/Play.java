@@ -3,45 +3,44 @@ package com.aps3.jogo.Telas;
 import com.aps3.jogo.Controles.Colisao;
 import com.aps3.jogo.Controles.Entrada;
 import com.aps3.jogo.Controles.PosicaoLixo;
-import com.aps3.jogo.Entidades.Lixo;
-import com.aps3.jogo.Entidades.Mochila;
-import com.aps3.jogo.Entidades.Player;
-import com.aps3.jogo.Entidades.tipoLixo;
+import com.aps3.jogo.Entidades.*;
 import com.aps3.jogo.Jogo;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import static com.aps3.jogo.Entidades.tipoLixo.*;
 
 public class Play implements Screen{
-    //private final Jogo jogo;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera camera;
     Player player;
-    //float playerX,playerY;
     Vector3 posicaoPlayer;
     float playerXtela,playerYtela;
-    boolean andando = false;
+    boolean podeAndar = true;
     private float elapsedTime = 0f;
     private int velocidade = 5;
     Entrada entrada = new Entrada();
@@ -78,6 +77,22 @@ public class Play implements Screen{
     private Mochila mochila;
     private List<Lixo> itensMochila;
 
+    // Caçambas
+    private List<Cacamba> cacambas;
+    private Boolean cacambaAberta=false;
+    private Stage inventario;
+    private Cacamba atualCacamba;
+
+    //Inventario
+    private SpriteBatch quadradoLaranja;
+    private Texture transparenciaLaranja;
+    private Drawable drawableVazio;
+    private ImageButton lixo1;
+    private ImageButton lixo2;
+    private ImageButton lixo3;
+    private ImageButton lixo4;
+    private ImageButton lixo5;
+
 
     public Play(){
 
@@ -113,8 +128,65 @@ public class Play implements Screen{
         posicaoLixos = new PosicaoLixo(camadaLixos);
         carregarLixos();
 
+        // Mochila
         mochila = new Mochila();
         itensMochila = new ArrayList<Lixo>();
+
+        // Caçambas
+        cacambas = new ArrayList<Cacamba>();
+        cacambas.add(new Cacamba(METAL,10,16));
+        cacambas.add(new Cacamba(PAPEL,13,16));
+        cacambas.add(new Cacamba(PLASTICO,15,15));
+        cacambas.add(new Cacamba(VIDRO,10,14));
+        cacambas.add(new Cacamba(ORGANICO,13,14));
+
+        // Inventario
+        quadradoLaranja = new SpriteBatch();
+        transparenciaLaranja = new Texture("img/quadradoLaranja.png");
+        inventario = new Stage(new ScreenViewport());
+
+        Texture botaoLixoVazio = new Texture(Gdx.files.internal("img/tipo-lixo/nenhum.png"));
+        drawableVazio = new TextureRegionDrawable(botaoLixoVazio);
+        lixo1 = new ImageButton(drawableVazio);
+        lixo2 = new ImageButton(drawableVazio);
+        lixo3 = new ImageButton(drawableVazio);
+        lixo4 = new ImageButton(drawableVazio);
+        lixo5 = new ImageButton(drawableVazio);
+
+        lixo1.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {jogarNaCacamba(1);}
+        });
+        lixo2.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {jogarNaCacamba(2);}
+        });
+        lixo3.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {jogarNaCacamba(3);}
+        });
+        lixo4.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {jogarNaCacamba(4);}
+        });
+        lixo5.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {jogarNaCacamba(5);}
+        });
+
+        lixo1.setPosition(128,600);
+        lixo2.setPosition(128,500);
+        lixo3.setPosition(128,400);
+        lixo4.setPosition(128,300);
+        lixo5.setPosition(128,200);
+
+        atualCacamba = new Cacamba(METAL,largura-250,400);
+
+        inventario.addActor(lixo1);
+        inventario.addActor(lixo2);
+        inventario.addActor(lixo3);
+        inventario.addActor(lixo4);
+        inventario.addActor(lixo5);
 
         camera.update();
     }
@@ -124,35 +196,37 @@ public class Play implements Screen{
 
     elapsedTime += Gdx.graphics.getDeltaTime();
     Gdx.input.setInputProcessor(entrada);
-    // Quando pressionado ESC
-      if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-          pause = !pause; // Alterna o estado de pause
-      }
 
-      // Verificando se passou das bordas
-      if (playerYtela+player.getAltura()/2 > altura*2/3){
+    // Quando pressionado ESC
+    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+      pause = !pause; // Alterna o estado de pause
+    }
+    // Verifica se passou das bordas
+    {
+      if (playerYtela + player.getAltura() / 2 > altura * 2 / 3) {
           foraBordaCima = true;
-      }else {
+      } else {
           foraBordaCima = false;
       }
-      if (playerYtela+player.getAltura()/2 < altura/3){
+      if (playerYtela + player.getAltura() / 2 < altura / 3) {
           foraBordaBaixo = true;
-      }else {
+      } else {
           foraBordaBaixo = false;
       }
-      if (playerXtela+player.getLargura()/2>largura*2/3){
+      if (playerXtela + player.getLargura() / 2 > largura * 2 / 3) {
           foraBordaDireita = true;
-      }else {
+      } else {
           foraBordaDireita = false;
       }
-      if (playerXtela+player.getLargura()/2 < largura/3){
+      if (playerXtela + player.getLargura() / 2 < largura / 3) {
           foraBordaEsquerda = true;
-      }else {
+      } else {
           foraBordaEsquerda = false;
       }
+    }
 
-      //Movimento caso não esteja pausado
-    if (!pause) {
+    //Movimento caso não esteja pausado
+    if (podeAndar) {
         // Movimento para cima
         if (entrada.cima && player.getY() < 4096 - player.getAltura()) {
             player.costa();
@@ -208,7 +282,7 @@ public class Play implements Screen{
         }
     }
 
-    if ((entrada.cima || entrada.baixo || entrada.direita || entrada.esquerda) & !pause ){
+    if ((entrada.cima || entrada.baixo || entrada.direita || entrada.esquerda) & podeAndar ){
         player.getAnimation().setFrameDuration(0.15f);
         posicaoPlayer = camera.project(new Vector3(player.getX(), player.getY(),0));
         playerYtela = posicaoPlayer.y;
@@ -217,99 +291,163 @@ public class Play implements Screen{
         player.getAnimation().setFrameDuration(0f);
     }
 
+    renderer.setView(camera);
+    renderer.render();
 
-      renderer.setView(camera);
-      renderer.render();
-      for(Lixo lixo:lixos){
-          //System.out.println(lixo.getX() +" - "+lixo.getY());
-          lixo.begin();
-          lixo.draw(lixo.getImagem(), lixo.getX(), lixo.getY(),36,36);
-          lixo.end();
-          //camera.update();
-          lixo.setProjectionMatrix(camera.combined);
-      }
-      player.begin();
-      player.draw((TextureRegion) player.getAnimation().getKeyFrame(elapsedTime,true), player.getX(), player.getY());
-      player.end();
+    //Desenha as caçambas
+    for(Cacamba cacamba:cacambas){
+      cacamba.begin();
+      cacamba.draw(cacamba.getImagem(), cacamba.getX(), cacamba.getY(),128,128);
+      cacamba.end();
+      cacamba.setProjectionMatrix(camera.combined);
+    }
+    // Desenha os lixos
+    for(Lixo lixo:lixos){
+      //System.out.println(lixo.getX() +" - "+lixo.getY());
+      lixo.begin();
+      lixo.draw(lixo.getImagem(), lixo.getX(), lixo.getY(),36,36);
+      lixo.end();
+      //camera.update();
+      lixo.setProjectionMatrix(camera.combined);
+    }
 
-      playerRec = new Rectangle(player.getX(),player.getY(),player.getLargura(),player.getAltura());
-      //playerRec.x = player.getX();
-      //playerRec.y = player.getY();
-/*
-      for(Lixo lixo:lixos){
-          if (lixo.getRectangle().overlaps(playerRec)){
+    player.begin();
+    player.draw((TextureRegion) player.getAnimation().getKeyFrame(elapsedTime,true), player.getX(), player.getY());
+    player.end();
+
+    playerRec = new Rectangle(player.getX(),player.getY(),player.getLargura(),player.getAltura());
+    //playerRec.x = player.getX();
+    //playerRec.y = player.getY();
+
+    // Pega o item quando enconsta em algum lixo
+    if(itensMochila.size()<5) {
+      Iterator<Lixo> iterator = lixos.iterator();
+      while (iterator.hasNext()) {
+          Lixo lixo = iterator.next();
+          if (lixo.getRectangle().overlaps(playerRec)) {
               pegarLixo(lixo);
+              iterator.remove();
           }
       }
+    }
 
- */
-      if(itensMochila.size()<5) {
-          Iterator<Lixo> iterator = lixos.iterator();
-          while (iterator.hasNext()) {
-              Lixo lixo = iterator.next();
-              if (lixo.getRectangle().overlaps(playerRec)) {
-                  pegarLixo(lixo);
-                  iterator.remove();
-              }
-          }
+    // Abre o inventario pressionando o E quando está perto da caçamba
+    for (Cacamba cacamba : cacambas){
+      if (cacamba.getRectangle().overlaps(playerRec) & Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+          Gdx.input.setInputProcessor(inventario);
+          atualizarInventario();
+
+          entrada.limparTeclas();
+          atualCacamba.setImagem(cacamba.getImagem());
+          //adbrirCacamba(cacamba);
+          cacambaAberta = !cacambaAberta;
       }
+    }
 
-      mochila.begin();
-      mochila.draw(mochila.getImagem(), largura/2-190, 20);
-      mochila.end();
+    mochila.begin();
+    mochila.draw(mochila.getImagem(), largura/2-190, 20);
+    mochila.end();
 
-      for(Lixo lixo:itensMochila){
-          //System.out.println(lixo.getX() +" - "+lixo.getY());
-          lixo.begin();
-          lixo.draw(lixo.getImagem(), lixo.getX(), lixo.getY(),36,36);
-          lixo.end();
-          //lixo.setProjectionMatrix(camera.combined);
+    // Desenha itens da mochila
+    for(Lixo lixo:itensMochila){
+      lixo.begin();
+      lixo.draw(lixo.getImagem(), lixo.getX(), lixo.getY(),36,36);
+      lixo.end();
+    }
+
+    // Desenhar quadrado
+    if (cacambaAberta || pause){
+        quadrado.begin();
+        quadrado.setColor(0, 0, 0, 0.3f);
+        quadrado.draw(transparencia, 0, 0, largura, altura);
+        quadrado.end();
+        podeAndar = false;
+    }else{
+        podeAndar = true;
+    }
+    // Desenhar quando pausado
+    if(pause){
+      cacambaAberta = false;
+      btnMenuInicial.begin();
+      btnMenuInicial.draw(texturaMenuInicial,btnMenuX, btnMenuY, texturaMenuInicial.getWidth(), texturaMenuInicial.getHeight());
+      btnMenuInicial.end();
+
+      btnReiniciar.begin();
+      btnReiniciar.draw(texturaReiniciar, btnReiniciarX, btnReiniciarY, texturaReiniciar.getWidth(), texturaReiniciar.getHeight());
+      btnReiniciar.end();
+    }
+    // Desenhar quando abrir inventario
+    if (cacambaAberta){
+        quadradoLaranja.begin();
+        quadradoLaranja.draw(transparenciaLaranja, 80, 128, largura-160, 548);
+        quadradoLaranja.end();
+        Gdx.input.setInputProcessor(inventario);
+        inventario.act(Gdx.graphics.getDeltaTime());
+        inventario.draw();
+        atualCacamba.begin();
+        atualCacamba.draw(atualCacamba.getImagem(), largura-256, 360);
+        atualCacamba.end();
+    }
+
+
+    if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) & pause){
+      float mouseX = Gdx.input.getX();
+      float mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
+      if (mouseX >= btnReiniciarX && mouseX <= btnReiniciarX + texturaReiniciar.getWidth() && mouseY >= btnReiniciarY && mouseY <= btnReiniciarY + texturaReiniciar.getHeight()) {
+          reiniciarJogo();
       }
-
-      // Desenhar quadrado quando pausado
-      if(pause){
-          quadrado.begin();
-          quadrado.setColor(0, 0, 0, 0.3f);
-          quadrado.draw(transparencia, 0, 0, largura, altura);
-          quadrado.end();
-
-          btnMenuInicial.begin();
-          btnMenuInicial.draw(texturaMenuInicial,btnMenuX, btnMenuY, texturaMenuInicial.getWidth(), texturaMenuInicial.getHeight());
-          btnMenuInicial.end();
-
-          btnReiniciar.begin();
-          btnReiniciar.draw(texturaReiniciar, btnReiniciarX, btnReiniciarY, texturaReiniciar.getWidth(), texturaReiniciar.getHeight());
-          btnReiniciar.end();
-
+      if (mouseX >= btnMenuX && mouseX <= btnMenuX + texturaReiniciar.getWidth() && mouseY >= btnReiniciarY && mouseY <= btnReiniciarY + texturaReiniciar.getHeight()) {
+          voltarMenu();
       }
-      if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) & pause){
-          float mouseX = Gdx.input.getX();
-          float mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
-          if (mouseX >= btnReiniciarX && mouseX <= btnReiniciarX + texturaReiniciar.getWidth() && mouseY >= btnReiniciarY && mouseY <= btnReiniciarY + texturaReiniciar.getHeight()) {
-              reiniciarJogo();
-          }
-          if (mouseX >= btnMenuX && mouseX <= btnMenuX + texturaReiniciar.getWidth() && mouseY >= btnReiniciarY && mouseY <= btnReiniciarY + texturaReiniciar.getHeight()) {
-              voltarMenu();
-          }
-      }
+    }
+
+
   }
     private void carregarLixos(){
         lixos = new ArrayList<Lixo>();
-        for(int i =0;i<40;i++){
+        for(int i =0;i<50;i++){
             tipoLixo[] tlixo = tipoLixo.values();
             tipoLixo lixoAleatorio = tlixo[aleatorio.nextInt(tlixo.length)];
             lixos.add(new Lixo(lixoAleatorio,posicaoLixos.retornaXY()));
         }
     }
     private void pegarLixo(Lixo lixo){
-        System.out.println("pegou?"+" - "+lixo.getX()+" - "+lixo.getY());
-        //lixos.remove(lixo);
         itensMochila.add(lixo);
         lixo.setX((largura/2-190)+(itensMochila.indexOf(lixo)*61)+77);
-        //lixo.setX(100);
         lixo.setY(32);
         lixo.getProjectionMatrix().setToOrtho2D(0, 0, largura, altura);
-
+    }
+    private void jogarNaCacamba(int item){
+        //itensMochila.get(item).getTipo();
+        if(itensMochila.size()>=item){
+            itensMochila.remove(item-1);
+        }
+        atualizarInventario();
+    }
+    private void atualizarInventario(){
+        lixo1.getStyle().imageUp = drawableVazio;
+        lixo2.getStyle().imageUp = drawableVazio;
+        lixo3.getStyle().imageUp = drawableVazio;
+        lixo4.getStyle().imageUp = drawableVazio;
+        lixo5.getStyle().imageUp = drawableVazio;
+        if(itensMochila.size()>=1){
+            lixo1.getStyle().imageUp = new TextureRegionDrawable(itensMochila.get(0).getImagem());
+        }
+        if(itensMochila.size()>=2){
+            lixo2.getStyle().imageUp = new TextureRegionDrawable(itensMochila.get(1).getImagem());
+        }
+        if(itensMochila.size()>=3){
+            lixo3.getStyle().imageUp = new TextureRegionDrawable(itensMochila.get(2).getImagem());
+        }
+        if(itensMochila.size()>=4){
+            lixo4.getStyle().imageUp = new TextureRegionDrawable(itensMochila.get(3).getImagem());
+        }
+        if(itensMochila.size()>=5){
+            lixo5.getStyle().imageUp = new TextureRegionDrawable(itensMochila.get(4).getImagem());
+        }
+        for(Lixo lixo:itensMochila){
+            lixo.setX((largura/2-190)+(itensMochila.indexOf(lixo)*61)+77);
+        }
     }
     private void reiniciarJogo() {
         System.out.println("Reiniciando o Jogo");
@@ -320,8 +458,6 @@ public class Play implements Screen{
         System.out.println("Voltando ao Menu");
         Jogo.getInstance().setScreen(new Menu());
     }
-
-
     public void resize(int width, int height){
         camera.viewportWidth = width;
         camera.viewportHeight = height;
@@ -329,16 +465,17 @@ public class Play implements Screen{
         largura = width;
         altura = height;
 
-        quadrado.dispose();
-        quadrado = new SpriteBatch();
+        quadrado.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
 
-        //mochila = new Mochila();
         mochila.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
+
         for(Lixo lixo:itensMochila){
             lixo.setX((largura/2-190)+(itensMochila.indexOf(lixo)*61)+77);
             lixo.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
         }
-
+        inventario.getViewport().update(width, height, true);
+        quadradoLaranja.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
+        atualCacamba.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
 
         btnMenuInicial.dispose();
         btnMenuInicial = new SpriteBatch();
