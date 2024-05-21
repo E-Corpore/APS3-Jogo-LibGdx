@@ -111,6 +111,7 @@ public class Menu implements Screen{
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
     }
 
     @Override

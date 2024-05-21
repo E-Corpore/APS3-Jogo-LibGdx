@@ -32,16 +32,16 @@ public class Entrada implements InputProcessor {
         if (keycode == Input.Keys.ESCAPE) {
             esc = !esc;
         }
-        if (keycode == Input.Keys.UP) {
+        if (keycode == Input.Keys.UP || keycode == Input.Keys.W) {
             cima = false;
         }
-        if (keycode == Input.Keys.DOWN) {
+        if (keycode == Input.Keys.DOWN || keycode == Input.Keys.S) {
             baixo = false;
         }
-        if (keycode == Input.Keys.RIGHT) {
+        if (keycode == Input.Keys.RIGHT || keycode == Input.Keys.D) {
             direita = false;
         }
-        if (keycode == Input.Keys.LEFT) {
+        if (keycode == Input.Keys.LEFT || keycode == Input.Keys.A) {
             esquerda = false;
         }
 

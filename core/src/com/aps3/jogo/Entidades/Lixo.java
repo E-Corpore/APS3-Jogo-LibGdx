@@ -39,36 +39,46 @@ public class Lixo extends SpriteBatch{
             case METAL:
                 if (new Random().nextInt(2) == 0) {
                     this.texturaLixo = metal1;
+                    this.nome = "Lata de refrigerante";
                 }else {
                     this.texturaLixo = metal2;
+                    this.nome = "Lata de milho";
                 }
                 break;
             case PAPEL:
                 if (new Random().nextInt(2) == 0) {
                     this.texturaLixo = papel1;
+                    this.nome = "Jornais";
                 }else {
                     this.texturaLixo = papel2;
+                    this.nome = "Embalagem de isopor";// É UM TIPO DE PLASTICO
                 }
                 break;
             case PLASTICO:
                 if (new Random().nextInt(2) == 0) {
                     this.texturaLixo = plastico1;
+                    this.nome = "Sacola de mercado";
                 }else {
                     this.texturaLixo = plastico2;
+                    this.nome = "Garrafa pet";
                 }
                 break;
             case VIDRO:
                 if (new Random().nextInt(2) == 0) {
                     this.texturaLixo = vidro1;
+                    this.nome = "Garrafa de vidro 1";
                 }else {
                     this.texturaLixo = vidro2;
+                    this.nome = "Garrafa de vidro 2";
                 }
                 break;
             case ORGANICO:
                 if (new Random().nextInt(2) == 0) {
                     this.texturaLixo = organico1;
+                    this.nome = "Maça";
                 }else {
                     this.texturaLixo = organico2;
+                    this.nome = "Osso";
                 }
                 break;
             default:

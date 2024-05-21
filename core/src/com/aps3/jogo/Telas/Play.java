@@ -8,6 +8,7 @@ import com.aps3.jogo.Jogo;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -21,11 +22,11 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,18 +35,23 @@ import java.util.Random;
 import static com.aps3.jogo.Entidades.tipoLixo.*;
 
 public class Play implements Screen{
+    // Principais variaveis do jogo
+    private int qtdLixo = 80;
+    private int velocidade = 2;
+
+    // Mapa
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera camera;
+    // Player
     Player player;
     Vector3 posicaoPlayer;
     float playerXtela,playerYtela;
     boolean podeAndar = true;
     private float elapsedTime = 0f;
-    private int velocidade = 5;
     Entrada entrada = new Entrada();
     private int largura,altura;
-    private float cameraX,cameraY;
+    //private float cameraX,cameraY;
     private boolean foraBordaCima;
     private boolean foraBordaBaixo;
     private boolean foraBordaDireita;
@@ -54,7 +60,7 @@ public class Play implements Screen{
     //variaveis para detectar colisão
     private TiledMapTileLayer camadaColisao;
     private Colisao colisao = new Colisao();
-    private Rectangle playerRec; // Colisão com o lixo
+    private Rectangle playerRec;
 
     // Pausar jogo
     private boolean pause=false;
@@ -71,7 +77,6 @@ public class Play implements Screen{
     private List<Lixo> lixos;
     private PosicaoLixo posicaoLixos;
     private TiledMapTileLayer camadaLixos;
-    private Random aleatorio=new Random();
 
     // Adicionando mochila
     private Mochila mochila;
@@ -81,17 +86,26 @@ public class Play implements Screen{
     private List<Cacamba> cacambas;
     private Boolean cacambaAberta=false;
     private Stage inventario;
-    private Cacamba atualCacamba;
+
 
     //Inventario
+    private BitmapFont fonte;
     private SpriteBatch quadradoLaranja;
     private Texture transparenciaLaranja;
+    private Cacamba atualCacamba;
+    private Label labelAtualCacamba;
     private Drawable drawableVazio;
+    private Drawable fundoBotaoLixo;
     private ImageButton lixo1;
     private ImageButton lixo2;
     private ImageButton lixo3;
     private ImageButton lixo4;
     private ImageButton lixo5;
+    private Label labelLixo1;
+    private Label labelLixo2;
+    private Label labelLixo3;
+    private Label labelLixo4;
+    private Label labelLixo5;
 
 
     public Play(){
@@ -146,12 +160,34 @@ public class Play implements Screen{
         inventario = new Stage(new ScreenViewport());
 
         Texture botaoLixoVazio = new Texture(Gdx.files.internal("img/tipo-lixo/nenhum.png"));
+        Texture fundoTexturaLixo = new Texture(Gdx.files.internal("img/tipo-lixo/fundoBotaoLixo.png"));
         drawableVazio = new TextureRegionDrawable(botaoLixoVazio);
+        fundoBotaoLixo = new TextureRegionDrawable(fundoTexturaLixo);
+
+        fonte = new BitmapFont(Gdx.files.internal("fonte/PartyConfettiRegular.fnt"));
+        // Criar um estilo para a Label
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = fonte;
+        labelStyle.fontColor = Color.WHITE;
+
+        labelAtualCacamba = new Label("", labelStyle);
+        labelLixo1 = new Label("", labelStyle);
+        labelLixo2 = new Label("", labelStyle);
+        labelLixo3 = new Label("", labelStyle);
+        labelLixo4 = new Label("", labelStyle);
+        labelLixo5 = new Label("", labelStyle);
+
         lixo1 = new ImageButton(drawableVazio);
         lixo2 = new ImageButton(drawableVazio);
         lixo3 = new ImageButton(drawableVazio);
         lixo4 = new ImageButton(drawableVazio);
         lixo5 = new ImageButton(drawableVazio);
+
+        lixo1.getStyle().up= fundoBotaoLixo;
+        lixo2.getStyle().up= fundoBotaoLixo;
+        lixo3.getStyle().up= fundoBotaoLixo;
+        lixo4.getStyle().up= fundoBotaoLixo;
+        lixo5.getStyle().up= fundoBotaoLixo;
 
         lixo1.addListener(new ClickListener() {
             @Override
@@ -174,14 +210,26 @@ public class Play implements Screen{
             public void clicked(InputEvent event, float x, float y) {jogarNaCacamba(5);}
         });
 
-        lixo1.setPosition(128,600);
-        lixo2.setPosition(128,500);
-        lixo3.setPosition(128,400);
-        lixo4.setPosition(128,300);
-        lixo5.setPosition(128,200);
+        labelAtualCacamba.setPosition(largura-320,528);
+        labelLixo1.setPosition(228,236);
+        lixo1.setBounds(128,200,72,72);
+        labelLixo2.setPosition(228,336);
+        lixo2.setBounds(128,300,72,72);
+        labelLixo3.setPosition(228,436);
+        lixo3.setBounds(128,400,72,72);
+        labelLixo4.setPosition(228,536);
+        lixo4.setBounds(128,500,72,72);
+        labelLixo5.setPosition(228,636);
+        lixo5.setBounds(128,600,72,72);
 
-        atualCacamba = new Cacamba(METAL,largura-250,400);
+        atualCacamba = new Cacamba(METAL,largura-286, 360);
 
+        inventario.addActor(labelAtualCacamba);
+        inventario.addActor(labelLixo1);
+        inventario.addActor(labelLixo2);
+        inventario.addActor(labelLixo3);
+        inventario.addActor(labelLixo4);
+        inventario.addActor(labelLixo5);
         inventario.addActor(lixo1);
         inventario.addActor(lixo2);
         inventario.addActor(lixo3);
@@ -236,7 +284,6 @@ public class Play implements Screen{
 
             if (foraBordaCima && (player.getY() + player.getAltura() / 2 < (4096 - altura / 3))) {
                 camera.translate(0, velocidade);
-                cameraY = camera.position.y;
                 camera.update();
                 player.setProjectionMatrix(camera.combined);
             }
@@ -249,7 +296,6 @@ public class Play implements Screen{
             }
             if (foraBordaBaixo && (player.getY() + player.getAltura() / 2) > (altura / 3)) {
                 camera.translate(0, -velocidade);
-                cameraY = camera.position.y;
                 camera.update();
                 player.setProjectionMatrix(camera.combined);
             }
@@ -262,7 +308,6 @@ public class Play implements Screen{
             }
             if (foraBordaEsquerda && (player.getX() + player.getLargura() / 2) > (largura / 3)) {
                 camera.translate(-velocidade, 0);
-                cameraX = camera.position.x;
                 camera.update();
                 player.setProjectionMatrix(camera.combined);
             }
@@ -275,7 +320,6 @@ public class Play implements Screen{
             }
             if (foraBordaDireita && (player.getX() + player.getLargura() / 2 < (4096 - largura / 3))) {
                 camera.translate(velocidade, 0);
-                cameraX = camera.position.x;
                 camera.update();
                 player.setProjectionMatrix(camera.combined);
             }
@@ -335,11 +379,12 @@ public class Play implements Screen{
     for (Cacamba cacamba : cacambas){
       if (cacamba.getRectangle().overlaps(playerRec) & Gdx.input.isKeyJustPressed(Input.Keys.E)) {
           Gdx.input.setInputProcessor(inventario);
-          atualizarInventario();
 
           entrada.limparTeclas();
           atualCacamba.setImagem(cacamba.getImagem());
-          //adbrirCacamba(cacamba);
+          atualCacamba.setNome(cacamba.getNome());
+          atualCacamba.setTipo(cacamba.getTipo());
+          atualizarInventario();
           cacambaAberta = !cacambaAberta;
       }
     }
@@ -379,13 +424,13 @@ public class Play implements Screen{
     // Desenhar quando abrir inventario
     if (cacambaAberta){
         quadradoLaranja.begin();
-        quadradoLaranja.draw(transparenciaLaranja, 80, 128, largura-160, 548);
+        quadradoLaranja.draw(transparenciaLaranja, 80, 128, largura-160, 620);
         quadradoLaranja.end();
         Gdx.input.setInputProcessor(inventario);
         inventario.act(Gdx.graphics.getDeltaTime());
         inventario.draw();
         atualCacamba.begin();
-        atualCacamba.draw(atualCacamba.getImagem(), largura-256, 360);
+        atualCacamba.draw(atualCacamba.getImagem(), largura-286, 360);
         atualCacamba.end();
     }
 
@@ -400,14 +445,12 @@ public class Play implements Screen{
           voltarMenu();
       }
     }
-
-
   }
     private void carregarLixos(){
         lixos = new ArrayList<Lixo>();
-        for(int i =0;i<50;i++){
+        for(int i =0;i<qtdLixo;i++){
             tipoLixo[] tlixo = tipoLixo.values();
-            tipoLixo lixoAleatorio = tlixo[aleatorio.nextInt(tlixo.length)];
+            tipoLixo lixoAleatorio = tlixo[new Random().nextInt(tlixo.length)];
             lixos.add(new Lixo(lixoAleatorio,posicaoLixos.retornaXY()));
         }
     }
@@ -420,29 +463,47 @@ public class Play implements Screen{
     private void jogarNaCacamba(int item){
         //itensMochila.get(item).getTipo();
         if(itensMochila.size()>=item){
-            itensMochila.remove(item-1);
+            if (atualCacamba.getTipo() == itensMochila.get(item-1).getTipo()){
+                System.out.println("Lixo jogado na caçamba certa");
+                itensMochila.remove(item-1);
+            }else{
+                System.out.println("Este lixo não vai para esta caçamba");
+            }
         }
         atualizarInventario();
     }
     private void atualizarInventario(){
+
         lixo1.getStyle().imageUp = drawableVazio;
         lixo2.getStyle().imageUp = drawableVazio;
         lixo3.getStyle().imageUp = drawableVazio;
         lixo4.getStyle().imageUp = drawableVazio;
         lixo5.getStyle().imageUp = drawableVazio;
+        labelAtualCacamba.setText(atualCacamba.getNome());
+        labelLixo1.setText("");
+        labelLixo2.setText("");
+        labelLixo3.setText("");
+        labelLixo4.setText("");
+        labelLixo5.setText("");
+
         if(itensMochila.size()>=1){
+            labelLixo1.setText(itensMochila.get(0).getNome());
             lixo1.getStyle().imageUp = new TextureRegionDrawable(itensMochila.get(0).getImagem());
         }
         if(itensMochila.size()>=2){
+            labelLixo2.setText(itensMochila.get(1).getNome());
             lixo2.getStyle().imageUp = new TextureRegionDrawable(itensMochila.get(1).getImagem());
         }
         if(itensMochila.size()>=3){
+            labelLixo3.setText(itensMochila.get(2).getNome());
             lixo3.getStyle().imageUp = new TextureRegionDrawable(itensMochila.get(2).getImagem());
         }
         if(itensMochila.size()>=4){
+            labelLixo4.setText(itensMochila.get(3).getNome());
             lixo4.getStyle().imageUp = new TextureRegionDrawable(itensMochila.get(3).getImagem());
         }
         if(itensMochila.size()>=5){
+            labelLixo5.setText(itensMochila.get(4).getNome());
             lixo5.getStyle().imageUp = new TextureRegionDrawable(itensMochila.get(4).getImagem());
         }
         for(Lixo lixo:itensMochila){
@@ -487,6 +548,7 @@ public class Play implements Screen{
         btnReiniciarX =(largura*2/3)-(texturaReiniciar.getWidth()/2);
         btnReiniciarY =(altura/2)-(texturaReiniciar.getWidth()/2);
 
+        labelAtualCacamba.setPosition(largura-320,528);
         //camera.position.x = width/
         //System.out.println("L: "+largura+" A: "+altura);
 

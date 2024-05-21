@@ -10,6 +10,7 @@ public class Cacamba extends SpriteBatch {
     private tipoLixo tipo;
     private Texture texturaCacamba;
     private Rectangle rectangle;
+    private String nome;
 
     public Cacamba(tipoLixo tipo,int x,int y) {
         this.tipo = tipo;
@@ -24,18 +25,23 @@ public class Cacamba extends SpriteBatch {
         switch (tipo) {
             case METAL:
                 this.texturaCacamba = metal;
+                this.nome = "Container de lixo de Metal";
                 break;
             case PAPEL:
                 this.texturaCacamba = papel;
+                this.nome = "Container de lixo de Papel";
                 break;
             case PLASTICO:
                 this.texturaCacamba = plastico;
+                this.nome = "Container de lixo de Plastico";
                 break;
             case VIDRO:
                 this.texturaCacamba = vidro;
+                this.nome = "Container de lixo de Vidro";
                 break;
             case ORGANICO:
                 this.texturaCacamba = organico;
+                this.nome = "Container de lixo Organico";
                 break;
             default:
         }
@@ -53,11 +59,19 @@ public class Cacamba extends SpriteBatch {
     public int getY() {
         return y;
     }
+    public Rectangle getRectangle() {
+        return rectangle;
+    }
+    public String getNome() {
+        return this.nome;
+    }
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
     public tipoLixo getTipo() {
         return tipo;
     }
-
-    public Rectangle getRectangle() {
-        return rectangle;
+    public void setTipo(tipoLixo tipo) {
+        this.tipo = tipo;
     }
 }
