@@ -26,6 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import java.util.ArrayList;
@@ -91,18 +92,14 @@ public class Play implements Screen{
     private BitmapFont fonte;
     private BitmapFont fonteNumeros;
     private Stage pontuacao;
-    private Texture fundoTextoPontuacao;
-    private Texture fundoPontuacao;
     private Label labelTextoAcertos;
     private Label labelAcertos;
     private int acertos;
+    private Label labelX;
     private Label labelTextoErros;
     private Label labelErros;
     private int erros;
-    private Image imagemFundoTexto1;
-    private Image imagemFundoPontuacao1;
-    private Image imagemFundoTexto2;
-    private Image imagemFundoPontuacao2;
+    private Image fundoPlacar;
 
     //Inventario
     private Stage inventario;
@@ -182,36 +179,37 @@ public class Play implements Screen{
 
         Label.LabelStyle numerosStyle = new Label.LabelStyle();
         numerosStyle.font = fonteNumeros;
-        numerosStyle.fontColor = Color.BLACK;
+        numerosStyle.fontColor = Color.WHITE;
 
         // Pontuação
-        fundoPontuacao = new Texture(Gdx.files.internal("img/fundoPontuacao.png"));
-        fundoTextoPontuacao = new Texture(Gdx.files.internal("img/fundoPontuacaoTexto.png"));
-        imagemFundoTexto1 = new Image(new TextureRegionDrawable(new TextureRegion(fundoPontuacao)));
-        imagemFundoPontuacao1 = new Image(new TextureRegionDrawable(new TextureRegion(fundoTextoPontuacao)));
-        imagemFundoTexto1.setBounds(largura/2-140, altura-40,80,40);
-        imagemFundoPontuacao1.setBounds(largura/2-60, altura-40,60,40);
-        imagemFundoTexto2 = new Image(new TextureRegionDrawable(new TextureRegion(fundoPontuacao)));
-        imagemFundoPontuacao2 = new Image(new TextureRegionDrawable(new TextureRegion(fundoTextoPontuacao)));
-        imagemFundoTexto2.setBounds(largura/2+60, altura-40,80,40);
-        imagemFundoPontuacao2.setBounds(largura/2, altura-40,60,40);
+        Texture texturaPlacar = new Texture(Gdx.files.internal("img/placar.png"));
+
+        fundoPlacar = new Image(new TextureRegionDrawable(new TextureRegion(texturaPlacar)));
+        fundoPlacar.setBounds(largura/2-160, altura-40,320,40);
 
         pontuacao = new Stage(new ScreenViewport());
         labelTextoAcertos = new Label("Acertos",labelStyle);
         labelTextoErros = new Label("Erros", labelStyle);
         labelAcertos = new Label("0", numerosStyle);
         labelErros = new Label("0", numerosStyle);
-        labelTextoAcertos.setBounds(largura/2-140,altura-40,80,40);
-        labelTextoErros.setBounds(largura/2+60,altura-40,80,40);
-        labelAcertos.setBounds(largura/2-60,altura-40,60,40);
-        labelErros.setBounds(largura/2,altura-40,60,40);
+        labelX = new Label("X", labelStyle);
+        labelTextoAcertos.setBounds(largura/2-160,altura-40,80,40);
+        labelTextoErros.setBounds(largura/2+80,altura-40,80,40);
+        labelAcertos.setBounds(largura/2-80,altura-40,80,40);
+        labelX.setBounds(largura/2-9,altura-40,18,40);
+        labelErros.setBounds(largura/2,altura-40,80,40);
 
-        pontuacao.addActor(imagemFundoTexto1);
-        pontuacao.addActor(imagemFundoPontuacao1);
-        pontuacao.addActor(imagemFundoTexto2);
-        pontuacao.addActor(imagemFundoPontuacao2);
+        labelTextoAcertos.setAlignment(Align.left);
+        labelTextoErros.setAlignment(Align.right);
+        labelAcertos.setAlignment(Align.center);
+        labelErros.setAlignment(Align.center);
+        labelX.setAlignment(Align.center);
+
+
+        pontuacao.addActor(fundoPlacar);
         pontuacao.addActor(labelTextoAcertos);
         pontuacao.addActor(labelAcertos);
+        pontuacao.addActor(labelX);
         pontuacao.addActor(labelTextoErros);
         pontuacao.addActor(labelErros);
 
@@ -602,14 +600,12 @@ public class Play implements Screen{
         }
 
         pontuacao.getViewport().update(width, height, true);
-        labelTextoAcertos.setPosition(largura/2-140,altura-40);
-        labelTextoErros.setPosition(largura/2+60,altura-40);
-        labelAcertos.setPosition(largura/2-60,altura-40);
+        labelTextoAcertos.setPosition(largura/2-145,altura-40);
+        labelTextoErros.setPosition(largura/2+65,altura-40);
+        labelAcertos.setPosition(largura/2-80,altura-40);
+        labelX.setPosition(largura/2-9,altura-40);
         labelErros.setPosition(largura/2,altura-40);
-        imagemFundoTexto1.setPosition(largura/2-140, altura-40);
-        imagemFundoPontuacao1.setPosition(largura/2-60, altura-40);
-        imagemFundoTexto2.setPosition(largura/2+60, altura-40);
-        imagemFundoPontuacao2.setPosition(largura/2, altura-40);
+        fundoPlacar.setPosition(largura/2-160, altura-40);
 
 
         inventario.getViewport().update(width, height, true);
