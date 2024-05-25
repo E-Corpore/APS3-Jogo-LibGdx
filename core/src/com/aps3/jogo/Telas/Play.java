@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,9 +36,8 @@ import java.util.Random;
 import static com.aps3.jogo.Entidades.tipoLixo.*;
 
 public class Play implements Screen{
-    // Principais variaveis do jogo
+
     private int qtdLixo = 80;
-    private int velocidade = 2;
 
     // Mapa
     private TiledMap map;
@@ -49,7 +49,7 @@ public class Play implements Screen{
     float playerXtela,playerYtela;
     boolean podeAndar = true;
     private float elapsedTime = 0f;
-    Entrada entrada = new Entrada();
+    Entrada entrada;
     private int largura,altura;
     //private float cameraX,cameraY;
     private boolean foraBordaCima;
@@ -59,7 +59,8 @@ public class Play implements Screen{
 
     //variaveis para detectar colisão
     private TiledMapTileLayer camadaColisao;
-    private Colisao colisao = new Colisao();
+    private TiledMapTileLayer camadaRua;
+    private Colisao colisao;
     private Rectangle playerRec;
 
     // Pausar jogo
@@ -85,13 +86,28 @@ public class Play implements Screen{
     // Caçambas
     private List<Cacamba> cacambas;
     private Boolean cacambaAberta=false;
-    private Stage inventario;
 
+    // Pontuação
+    private BitmapFont fonte;
+    private BitmapFont fonteNumeros;
+    private Stage pontuacao;
+    private Texture fundoTextoPontuacao;
+    private Texture fundoPontuacao;
+    private Label labelTextoAcertos;
+    private Label labelAcertos;
+    private int acertos;
+    private Label labelTextoErros;
+    private Label labelErros;
+    private int erros;
+    private Image imagemFundoTexto1;
+    private Image imagemFundoPontuacao1;
+    private Image imagemFundoTexto2;
+    private Image imagemFundoPontuacao2;
 
     //Inventario
-    private BitmapFont fonte;
-    private SpriteBatch quadradoLaranja;
-    private Texture transparenciaLaranja;
+    private Stage inventario;
+    private SpriteBatch quadradoInventario;
+    private Texture transparenciaInventario;
     private Cacamba atualCacamba;
     private Label labelAtualCacamba;
     private Drawable drawableVazio;
@@ -125,8 +141,11 @@ public class Play implements Screen{
         player = new Player();
         camera.position.x = player.getX();
         camera.position.y = player.getY();
+        colisao = new Colisao(player);
+        entrada = new Entrada(player);
 
         camadaColisao = (TiledMapTileLayer) map.getLayers().get("Colisao");
+        camadaRua = (TiledMapTileLayer) map.getLayers().get("Ruas");
         playerRec = new Rectangle(player.getX(), player.getY(),player.getLargura(), player.getAltura());
 
         // Itens para pausa
@@ -154,21 +173,57 @@ public class Play implements Screen{
         cacambas.add(new Cacamba(VIDRO,10,14));
         cacambas.add(new Cacamba(ORGANICO,13,14));
 
+        // Estilo de fonte
+        fonte = new BitmapFont(Gdx.files.internal("fonte/PartyConfettiRegular.fnt"));
+        fonteNumeros = new BitmapFont(Gdx.files.internal("fonte/numeros-mix-bit.fnt"));
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = fonte;
+        labelStyle.fontColor = Color.WHITE;
+
+        Label.LabelStyle numerosStyle = new Label.LabelStyle();
+        numerosStyle.font = fonteNumeros;
+        numerosStyle.fontColor = Color.BLACK;
+
+        // Pontuação
+        fundoPontuacao = new Texture(Gdx.files.internal("img/fundoPontuacao.png"));
+        fundoTextoPontuacao = new Texture(Gdx.files.internal("img/fundoPontuacaoTexto.png"));
+        imagemFundoTexto1 = new Image(new TextureRegionDrawable(new TextureRegion(fundoPontuacao)));
+        imagemFundoPontuacao1 = new Image(new TextureRegionDrawable(new TextureRegion(fundoTextoPontuacao)));
+        imagemFundoTexto1.setBounds(largura/2-140, altura-40,80,40);
+        imagemFundoPontuacao1.setBounds(largura/2-60, altura-40,60,40);
+        imagemFundoTexto2 = new Image(new TextureRegionDrawable(new TextureRegion(fundoPontuacao)));
+        imagemFundoPontuacao2 = new Image(new TextureRegionDrawable(new TextureRegion(fundoTextoPontuacao)));
+        imagemFundoTexto2.setBounds(largura/2+60, altura-40,80,40);
+        imagemFundoPontuacao2.setBounds(largura/2, altura-40,60,40);
+
+        pontuacao = new Stage(new ScreenViewport());
+        labelTextoAcertos = new Label("Acertos",labelStyle);
+        labelTextoErros = new Label("Erros", labelStyle);
+        labelAcertos = new Label("0", numerosStyle);
+        labelErros = new Label("0", numerosStyle);
+        labelTextoAcertos.setBounds(largura/2-140,altura-40,80,40);
+        labelTextoErros.setBounds(largura/2+60,altura-40,80,40);
+        labelAcertos.setBounds(largura/2-60,altura-40,60,40);
+        labelErros.setBounds(largura/2,altura-40,60,40);
+
+        pontuacao.addActor(imagemFundoTexto1);
+        pontuacao.addActor(imagemFundoPontuacao1);
+        pontuacao.addActor(imagemFundoTexto2);
+        pontuacao.addActor(imagemFundoPontuacao2);
+        pontuacao.addActor(labelTextoAcertos);
+        pontuacao.addActor(labelAcertos);
+        pontuacao.addActor(labelTextoErros);
+        pontuacao.addActor(labelErros);
+
         // Inventario
-        quadradoLaranja = new SpriteBatch();
-        transparenciaLaranja = new Texture("img/quadradoLaranja.png");
+        quadradoInventario = new SpriteBatch();
+        transparenciaInventario = new Texture("img/quadradoInventario.png");
         inventario = new Stage(new ScreenViewport());
 
         Texture botaoLixoVazio = new Texture(Gdx.files.internal("img/tipo-lixo/nenhum.png"));
         Texture fundoTexturaLixo = new Texture(Gdx.files.internal("img/tipo-lixo/fundoBotaoLixo.png"));
         drawableVazio = new TextureRegionDrawable(botaoLixoVazio);
         fundoBotaoLixo = new TextureRegionDrawable(fundoTexturaLixo);
-
-        fonte = new BitmapFont(Gdx.files.internal("fonte/PartyConfettiRegular.fnt"));
-        // Criar um estilo para a Label
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = fonte;
-        labelStyle.fontColor = Color.WHITE;
 
         labelAtualCacamba = new Label("", labelStyle);
         labelLixo1 = new Label("", labelStyle);
@@ -277,49 +332,56 @@ public class Play implements Screen{
     if (podeAndar) {
         // Movimento para cima
         if (entrada.cima && player.getY() < 4096 - player.getAltura()) {
-            player.costa();
-            if (!colisao.cima(player, camadaColisao)) {
-                player.andarY(velocidade);
-            }
+            if (!colisao.cima(camadaColisao)) {
+                player.setCorrendo(colisao.cima(camadaRua));
+                player.setDirecao(Direcao.CIMA);
+                player.andarY(player.getVelocidade());
+            }else  {player.recuar();}
 
             if (foraBordaCima && (player.getY() + player.getAltura() / 2 < (4096 - altura / 3))) {
-                camera.translate(0, velocidade);
+                camera.translate(0, player.getVelocidade());
                 camera.update();
                 player.setProjectionMatrix(camera.combined);
             }
         }
         // Movimento para baixo
         if (entrada.baixo && player.getY() > 0) {
-            player.frente();
-            if (!colisao.baixo(player, camadaColisao)) {
-                player.andarY(-velocidade);
-            }
+             if (!colisao.baixo(camadaColisao)) {
+                 player.setCorrendo(colisao.baixo(camadaRua));
+                 player.setDirecao(Direcao.BAIXO);
+                 player.andarY(-player.getVelocidade());
+            }else {player.recuar();}
+
             if (foraBordaBaixo && (player.getY() + player.getAltura() / 2) > (altura / 3)) {
-                camera.translate(0, -velocidade);
+                camera.translate(0, -player.getVelocidade());
                 camera.update();
                 player.setProjectionMatrix(camera.combined);
             }
         }
         // Movimento para a esquerda
         if (entrada.esquerda && player.getX() > 0) {
-            player.esquerda();
-            if (!colisao.esquerda(player, camadaColisao)) {
-                player.andarX(-velocidade);
-            }
+            if (!colisao.esquerda(camadaColisao)) {
+                player.setCorrendo(colisao.esquerda(camadaRua));
+                player.setDirecao(Direcao.ESQUERDA);
+                player.andarX(-player.getVelocidade());
+            }else {player.recuar();}
+
             if (foraBordaEsquerda && (player.getX() + player.getLargura() / 2) > (largura / 3)) {
-                camera.translate(-velocidade, 0);
+                camera.translate(-player.getVelocidade(), 0);
                 camera.update();
                 player.setProjectionMatrix(camera.combined);
             }
         }
         // Movimento para a direita
         if (entrada.direita && player.getX() < 4096 - player.getLargura()) {
-            player.direita();
-            if (!colisao.direita(player, camadaColisao)) {
-                player.andarX(velocidade);
-            }
+            if (!colisao.direita(camadaColisao)) {
+                player.setCorrendo(colisao.direita(camadaRua));
+                player.setDirecao(Direcao.DIREITA);
+                player.andarX(player.getVelocidade());
+            }else {player.recuar();}
+
             if (foraBordaDireita && (player.getX() + player.getLargura() / 2 < (4096 - largura / 3))) {
-                camera.translate(velocidade, 0);
+                camera.translate(player.getVelocidade(), 0);
                 camera.update();
                 player.setProjectionMatrix(camera.combined);
             }
@@ -327,7 +389,6 @@ public class Play implements Screen{
     }
 
     if ((entrada.cima || entrada.baixo || entrada.direita || entrada.esquerda) & podeAndar ){
-        player.getAnimation().setFrameDuration(0.15f);
         posicaoPlayer = camera.project(new Vector3(player.getX(), player.getY(),0));
         playerYtela = posicaoPlayer.y;
         playerXtela = posicaoPlayer.x;
@@ -336,7 +397,7 @@ public class Play implements Screen{
     }
 
     renderer.setView(camera);
-    renderer.render();
+    renderer.render(new int[]{2,3,4,5,6,7,8,9,10,11,12});
 
     //Desenha as caçambas
     for(Cacamba cacamba:cacambas){
@@ -357,7 +418,10 @@ public class Play implements Screen{
 
     player.begin();
     player.draw((TextureRegion) player.getAnimation().getKeyFrame(elapsedTime,true), player.getX(), player.getY());
+    //player.draw(player.framePlayer(direcao,elapsedTime), player.getX(), player.getY());
     player.end();
+
+    renderer.render(new int[]{13});
 
     playerRec = new Rectangle(player.getX(),player.getY(),player.getLargura(),player.getAltura());
     //playerRec.x = player.getX();
@@ -399,6 +463,7 @@ public class Play implements Screen{
       lixo.draw(lixo.getImagem(), lixo.getX(), lixo.getY(),36,36);
       lixo.end();
     }
+    pontuacao.draw();
 
     // Desenhar quadrado
     if (cacambaAberta || pause){
@@ -423,11 +488,10 @@ public class Play implements Screen{
     }
     // Desenhar quando abrir inventario
     if (cacambaAberta){
-        quadradoLaranja.begin();
-        quadradoLaranja.draw(transparenciaLaranja, 80, 128, largura-160, 620);
-        quadradoLaranja.end();
+        quadradoInventario.begin();
+        quadradoInventario.draw(transparenciaInventario, 80, 128, largura-160, 620);
+        quadradoInventario.end();
         Gdx.input.setInputProcessor(inventario);
-        inventario.act(Gdx.graphics.getDeltaTime());
         inventario.draw();
         atualCacamba.begin();
         atualCacamba.draw(atualCacamba.getImagem(), largura-286, 360);
@@ -464,11 +528,13 @@ public class Play implements Screen{
         //itensMochila.get(item).getTipo();
         if(itensMochila.size()>=item){
             if (atualCacamba.getTipo() == itensMochila.get(item-1).getTipo()){
-                System.out.println("Lixo jogado na caçamba certa");
+                acertos +=1;
                 itensMochila.remove(item-1);
             }else{
-                System.out.println("Este lixo não vai para esta caçamba");
+                erros +=1;
             }
+            labelAcertos.setText(acertos);
+            labelErros.setText(erros);
         }
         atualizarInventario();
     }
@@ -534,8 +600,20 @@ public class Play implements Screen{
             lixo.setX((largura/2-190)+(itensMochila.indexOf(lixo)*61)+77);
             lixo.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
         }
+
+        pontuacao.getViewport().update(width, height, true);
+        labelTextoAcertos.setPosition(largura/2-140,altura-40);
+        labelTextoErros.setPosition(largura/2+60,altura-40);
+        labelAcertos.setPosition(largura/2-60,altura-40);
+        labelErros.setPosition(largura/2,altura-40);
+        imagemFundoTexto1.setPosition(largura/2-140, altura-40);
+        imagemFundoPontuacao1.setPosition(largura/2-60, altura-40);
+        imagemFundoTexto2.setPosition(largura/2+60, altura-40);
+        imagemFundoPontuacao2.setPosition(largura/2, altura-40);
+
+
         inventario.getViewport().update(width, height, true);
-        quadradoLaranja.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
+        quadradoInventario.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
         atualCacamba.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
 
         btnMenuInicial.dispose();

@@ -3,12 +3,16 @@ package com.aps3.jogo.Telas;
 import com.aps3.jogo.Jogo;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
@@ -21,6 +25,7 @@ public class Menu implements Screen{
     private Stage stage;
     private Texture backgroundTexture;
     private SpriteBatch batch;
+    private BitmapFont fonteBotoes;
 
     public Menu() {
 
@@ -28,31 +33,26 @@ public class Menu implements Screen{
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
+        fonteBotoes = new BitmapFont(Gdx.files.internal("fonte/mix-bit48.fnt"));
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = fonteBotoes;
+        labelStyle.fontColor = Color.RED;
+
         // Carregar a textura do fundo
         backgroundTexture = new Texture(Gdx.files.internal("menu/fundo-menu.jpeg"));
         batch = new SpriteBatch();
 
-        // Carregar os assets das imagens dos botões
-        //Skin skin = new Skin();
-        Texture playTexture = new Texture(Gdx.files.internal("menu/btnIniciar.png"));
+        Texture playTexture = new Texture(Gdx.files.internal("menu/fundoBotao.png"));
         Drawable playDrawable = new TextureRegionDrawable(playTexture);
-        ImageButton playButton = new ImageButton(playDrawable);
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle( playDrawable, playDrawable, playDrawable, fonteBotoes);
+        textButtonStyle.fontColor = Color.GRAY;
 
-        Texture skinTexture = new Texture(Gdx.files.internal("menu/btnSkin.png"));
-        Drawable skinDrawable = new TextureRegionDrawable(skinTexture);
-        ImageButton skinButton = new ImageButton(skinDrawable);
-
-        Texture lojaTexture = new Texture(Gdx.files.internal("menu/btnLoja.png"));
-        Drawable lojaDrawable = new TextureRegionDrawable(lojaTexture);
-        ImageButton lojaButton = new ImageButton(lojaDrawable);
-
-        Texture tutorialTexture = new Texture(Gdx.files.internal("menu/btnTutorial.png"));
-        Drawable tutorialDrawable = new TextureRegionDrawable(tutorialTexture);
-        ImageButton tutorialButton = new ImageButton(tutorialDrawable);
-
-        Texture sairTexture = new Texture(Gdx.files.internal("menu/btnSair.png"));
-        Drawable sairDrawable = new TextureRegionDrawable(sairTexture);
-        ImageButton sairButton = new ImageButton(sairDrawable);
+        // Carregar os botões
+        TextButton playButton = new TextButton("Play", textButtonStyle);
+        TextButton skinButton = new TextButton("Skin", textButtonStyle);
+        TextButton lojaButton = new TextButton("Loja", textButtonStyle);
+        TextButton tutorialButton = new TextButton("Tutorial", textButtonStyle);
+        TextButton sairButton = new TextButton("Sair", textButtonStyle);
 
         // Adicionar listeners aos botões
         playButton.addListener(e -> {

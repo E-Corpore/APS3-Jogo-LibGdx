@@ -13,50 +13,30 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 
 public class Player extends SpriteBatch{
-    //public SpriteBatch batch;
-    private TextureAtlas textureAtlasFrente;
-    private TextureAtlas textureAtlasCosta;
-    private TextureAtlas textureAtlasDireita;
-    private TextureAtlas textureAtlasEsquerda;
+    private TextureAtlas atlasPlayer;
+
     private Animation animation;
     private int largura=36,altura=68;
     private float x=2328,y=1965;
     private float anteriorX=2328,anteriorY=1965;
+    private Direcao direcao;
+    private boolean correndo = false;
+    private int velocidade;
 
     public Player(){
-        //batch = new SpriteBatch();
-        textureAtlasFrente = new TextureAtlas(Gdx.files.internal("frente.atlas"));
-        textureAtlasCosta = new TextureAtlas(Gdx.files.internal("costa.atlas"));
-        textureAtlasDireita = new TextureAtlas(Gdx.files.internal("direita.atlas"));
-        textureAtlasEsquerda = new TextureAtlas(Gdx.files.internal("esquerda.atlas"));
-        frente();
-
+        atlasPlayer = new TextureAtlas(Gdx.files.internal("player.atlas"));
+        direcao = Direcao.BAIXO;
+        setDirecao(direcao);
     }
-    public void frente(){
-        animation = new Animation(0f, textureAtlasFrente.getRegions());
-    }
-    public void costa(){
-        animation = new Animation(0f, textureAtlasCosta.getRegions());
-    }
-    public void direita(){
-        animation = new Animation(0f, textureAtlasDireita.getRegions());
-    }
-    public void esquerda(){
-        animation = new Animation(0f, textureAtlasEsquerda.getRegions());
-    }
-
     public int getAltura() {
         return altura;
     }
-
     public int getLargura() {
         return largura;
     }
-
     public float getX() {
         return x;
     }
-
     public void andarX(float v) {
         this.anteriorX = this.x;
         this.x = x+v;
@@ -69,12 +49,54 @@ public class Player extends SpriteBatch{
         this.anteriorY = this.y;
         this.y = y+ v;
     }
-
+    public void recuar(){
+        //this.x = anteriorX;
+        //this.y = anteriorY;
+    }
     public Animation getAnimation() {
         return animation;
     }
-
-    public void setAnimation(Animation animation) {
-        this.animation = animation;
+    public void setDirecao(Direcao direcao) {
+        this.direcao = direcao;
+        float velocidadeAnimacaoAndando = 0.16f;
+        float velocidadeAnimacaoCorrendo = 0.08f;
+        switch (this.direcao){
+            case BAIXO:
+                if(correndo){
+                    animation = new Animation(velocidadeAnimacaoCorrendo, atlasPlayer.findRegions("correrFrente"));
+                }else {
+                    animation = new Animation(velocidadeAnimacaoAndando, atlasPlayer.findRegions("frente"));
+                }
+                break;
+            case CIMA:
+                if(correndo){
+                    animation = new Animation(velocidadeAnimacaoCorrendo, atlasPlayer.findRegions("correrCosta"));
+                }else {
+                    animation = new Animation(velocidadeAnimacaoAndando, atlasPlayer.findRegions("costa"));
+                }
+                break;
+            case ESQUERDA:
+                if(correndo){
+                    animation = new Animation(velocidadeAnimacaoCorrendo, atlasPlayer.findRegions("correrEsquerda"));
+                }else {
+                    animation = new Animation(velocidadeAnimacaoAndando, atlasPlayer.findRegions("esquerda"));
+                }
+                break;
+            case DIREITA:
+                if(correndo){
+                    animation = new Animation(velocidadeAnimacaoCorrendo, atlasPlayer.findRegions("correrDireita"));
+                }else {
+                    animation = new Animation(velocidadeAnimacaoAndando, atlasPlayer.findRegions("direita"));
+                }
+                break;
+        }
+    }
+    public int getVelocidade() {
+        return velocidade;
+    }
+    public void setCorrendo(boolean correndo) {
+        this.velocidade = correndo?4:2;
+        //this.animation.setFrameDuration(correndo?0.08f:0.16f);
+        this.correndo = correndo;
     }
 }
