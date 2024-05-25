@@ -20,7 +20,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 
 public class Menu implements Screen{
-    private final Jogo jogo;
+    //private final Jogo jogo;
     private Play play;
     private Stage stage;
     private Texture backgroundTexture;
@@ -29,14 +29,10 @@ public class Menu implements Screen{
 
     public Menu() {
 
-        this.jogo = new Jogo();
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
         fonteBotoes = new BitmapFont(Gdx.files.internal("fonte/mix-bit48.fnt"));
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = fonteBotoes;
-        labelStyle.fontColor = Color.RED;
 
         // Carregar a textura do fundo
         backgroundTexture = new Texture(Gdx.files.internal("menu/fundo-menu.jpeg"));
@@ -57,8 +53,14 @@ public class Menu implements Screen{
         // Adicionar listeners aos botões
         playButton.addListener(e -> {
             if (playButton.isPressed()) {
-                new Jogo();
-                Jogo.getInstance().setScreen(new Play()); // Mude para a tela do jogo
+                Jogo.getInstance().setScreen(new Play());
+            }
+            return true;
+        });
+        tutorialButton.addListener(e -> {
+            if (tutorialButton.isPressed()) {
+                System.out.println("Tutorial");
+                Jogo.getInstance().setScreen(new Tutorial());
             }
             return true;
         });
@@ -104,7 +106,7 @@ public class Menu implements Screen{
         batch.end();
 
         // Desenhar o Stage
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        //stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }
 
