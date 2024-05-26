@@ -15,9 +15,7 @@ public class Lixo extends SpriteBatch{
     private String nome;
 
     public Lixo(tipoLixo tipo, Vector2 posicao){
-
         this.tipo = tipo;
-        //this.posicao = posicao;
         this.posicao.x = (posicao.x*128)+46;
         this.posicao.y = (posicao.y*128)+46;
         iniciar();

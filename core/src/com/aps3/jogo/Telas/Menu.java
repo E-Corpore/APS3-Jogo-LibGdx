@@ -1,5 +1,4 @@
 package com.aps3.jogo.Telas;
-
 import com.aps3.jogo.Jogo;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -15,28 +14,22 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-
 public class Menu implements Screen{
     private final Stage stage;
     private final Texture backgroundTexture;
     private final SpriteBatch batch;
 
     public Menu() {
-
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-
         BitmapFont fonteBotoes = new BitmapFont(Gdx.files.internal("fonte/mix-bit48.fnt"));
-
         // Carregar a textura do fundo
         backgroundTexture = new Texture(Gdx.files.internal("menu/fundo-menu.jpeg"));
         batch = new SpriteBatch();
-
         Texture playTexture = new Texture(Gdx.files.internal("menu/fundoBotao.png"));
         Drawable playDrawable = new TextureRegionDrawable(playTexture);
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle( playDrawable, playDrawable, playDrawable, fonteBotoes);
         textButtonStyle.fontColor = Color.GRAY;
-
         // Carregar os botões
         TextButton playButton = new TextButton("Play", textButtonStyle);
         TextButton tutorialButton = new TextButton("Tutorial", textButtonStyle);
@@ -56,7 +49,6 @@ public class Menu implements Screen{
             }
             return true;
         });
-
         sairButton.addListener(e -> {
             if (sairButton.isPressed()) {
                 Gdx.app.exit(); // Saia do aplicativo
@@ -64,7 +56,6 @@ public class Menu implements Screen{
             return true;
         });
 
-        // Usar uma tabela para organizar os botões
         Table table = new Table();
         table.setFillParent(true);
         table.center();
@@ -73,7 +64,6 @@ public class Menu implements Screen{
         table.add(tutorialButton);
         table.row();
         table.add(sairButton);
-
         stage.addActor(table);
     }
 

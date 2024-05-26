@@ -19,7 +19,7 @@ public class PosicaoLixo {
         return vetores.get(aleatorio.nextInt(vetores.size()));
     }
     public void adicionarVetores() {
-        // Iterar sobre cada célula na camada de colisão
+        // Iterar sobre cada célula na camada de lixos
         for (int y = 0; y < camadaLixos.getHeight(); y++) {
             for (int x = 0; x < camadaLixos.getWidth(); x++) {
                 celula = camadaLixos.getCell(x, y);

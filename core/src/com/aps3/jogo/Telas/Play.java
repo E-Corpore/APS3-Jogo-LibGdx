@@ -83,6 +83,7 @@ public class Play implements Screen{
     private List<Cacamba> cacambas;
     private Boolean cacambaAberta=false;
 
+    // Placar
     private Stage pontuacao;
     private Label labelTextoAcertos;
     private Label labelAcertos;
@@ -129,9 +130,7 @@ public class Play implements Screen{
     private Label fimAcertos;
     private Label fimErros;
 
-
     public Play(){
-
     }
     public void show() {
         map = new TmxMapLoader().load("mapa.tmx");
@@ -148,8 +147,7 @@ public class Play implements Screen{
         camera.position.x = player.getX();
         camera.position.y = player.getY();
         colisao = new Colisao(player);
-        entrada = new Entrada(player);
-
+        entrada = new Entrada();
         camadaColisao = (TiledMapTileLayer) map.getLayers().get("Colisao");
         camadaRua = (TiledMapTileLayer) map.getLayers().get("Ruas");
         playerRec = new Rectangle(player.getX(), player.getY(),player.getLargura(), player.getAltura());
@@ -180,7 +178,6 @@ public class Play implements Screen{
         cacambas.add(new Cacamba(VIDRO,10,14));
         cacambas.add(new Cacamba(ORGANICO,13,14));
 
-        // Estilo de fonte
         // Pontuação
         BitmapFont fonte = new BitmapFont(Gdx.files.internal("fonte/PartyConfettiRegular.fnt"));
         BitmapFont fonteNumeros = new BitmapFont(Gdx.files.internal("fonte/numeros-mix-bit.fnt"));
@@ -386,17 +383,25 @@ public class Play implements Screen{
       pause = !pause; // Alterna o estado de pause
     }
     // Verifica se passou das bordas
-      boolean foraBordaCima;
-      boolean foraBordaBaixo;
-      boolean foraBordaDireita;
-      boolean foraBordaEsquerda;
-      {
-          foraBordaCima = playerYtela + (float) player.getAltura() / 2 > (float) (altura * 2) / 3;
-          foraBordaBaixo = playerYtela + (float) player.getAltura() / 2 < (float) altura / 3;
-          foraBordaDireita = playerXtela + (float) player.getLargura() / 2 > (float) (largura * 2) / 3;
-          foraBordaEsquerda = playerXtela + (float) player.getLargura() / 2 < (float) largura / 3;
+    boolean foraBordaCima;
+    boolean foraBordaBaixo;
+    boolean foraBordaDireita;
+    boolean foraBordaEsquerda;
+    {
+      foraBordaCima = playerYtela + (float) player.getAltura() / 2 > (float) (altura * 2) / 3;
+      foraBordaBaixo = playerYtela + (float) player.getAltura() / 2 < (float) altura / 3;
+      foraBordaDireita = playerXtela + (float) player.getLargura() / 2 > (float) (largura * 2) / 3;
+      foraBordaEsquerda = playerXtela + (float) player.getLargura() / 2 < (float) largura / 3;
     }
 
+    // Animação quando esta em movimento
+    if ((entrada.cima || entrada.baixo || entrada.direita || entrada.esquerda) & podeAndar ){
+      posicaoPlayer = camera.project(new Vector3(player.getX(), player.getY(),0));
+      playerYtela = posicaoPlayer.y;
+      playerXtela = posicaoPlayer.x;
+    }else {
+      player.getAnimation().setFrameDuration(0f);
+    }
     //Movimento caso não esteja pausado
     if (podeAndar) {
         // Movimento para cima
@@ -404,7 +409,7 @@ public class Play implements Screen{
             if (!colisao.cima(camadaColisao)) {
                 player.setCorrendo(colisao.cima(camadaRua));
                 player.setDirecao(Direcao.CIMA);
-                player.andarY(player.getVelocidade());
+                player.mover();
             }else  {player.recuar();}
 
             if (foraBordaCima && ((player.getY() + (float) player.getAltura() / 2) < (4096 - ((float) altura / 3)))) {
@@ -418,7 +423,7 @@ public class Play implements Screen{
              if (!colisao.baixo(camadaColisao)) {
                  player.setCorrendo(colisao.baixo(camadaRua));
                  player.setDirecao(Direcao.BAIXO);
-                 player.andarY(-player.getVelocidade());
+                 player.mover();
             }else {player.recuar();}
 
             if (foraBordaBaixo && (player.getY() + (float) player.getAltura() / 2) > ((float) altura / 3)) {
@@ -432,7 +437,7 @@ public class Play implements Screen{
             if (!colisao.esquerda(camadaColisao)) {
                 player.setCorrendo(colisao.esquerda(camadaRua));
                 player.setDirecao(Direcao.ESQUERDA);
-                player.andarX(-player.getVelocidade());
+                player.mover();
             }else {player.recuar();}
 
             if (foraBordaEsquerda && (player.getX() + (float) player.getLargura() / 2) > ((float) largura / 3)) {
@@ -446,7 +451,7 @@ public class Play implements Screen{
             if (!colisao.direita(camadaColisao)) {
                 player.setCorrendo(colisao.direita(camadaRua));
                 player.setDirecao(Direcao.DIREITA);
-                player.andarX(player.getVelocidade());
+                player.mover();
             }else {player.recuar();}
 
             if (foraBordaDireita && (player.getX() + (float) player.getLargura() / 2 < (4096 - (float) largura / 3))) {
@@ -455,14 +460,6 @@ public class Play implements Screen{
                 player.setProjectionMatrix(camera.combined);
             }
         }
-    }
-
-    if ((entrada.cima || entrada.baixo || entrada.direita || entrada.esquerda) & podeAndar ){
-        posicaoPlayer = camera.project(new Vector3(player.getX(), player.getY(),0));
-        playerYtela = posicaoPlayer.y;
-        playerXtela = posicaoPlayer.x;
-    }else {
-        player.getAnimation().setFrameDuration(0f);
     }
 
     renderer.setView(camera);
@@ -608,7 +605,6 @@ public class Play implements Screen{
         lixo.getProjectionMatrix().setToOrtho2D(0, 0, largura, altura);
     }
     private void jogarNaCacamba(int item){
-        //itensMochila.get(item).getTipo();
         if(itensMochila.size()>=item){
             if (atualCacamba.getTipo() == itensMochila.get(item-1).getTipo()){
                 switch (atualCacamba.getTipo()){

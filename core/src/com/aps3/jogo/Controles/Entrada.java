@@ -1,7 +1,4 @@
 package com.aps3.jogo.Controles;
-
-import com.aps3.jogo.Entidades.Direcao;
-import com.aps3.jogo.Entidades.Player;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
@@ -11,11 +8,7 @@ public class Entrada implements InputProcessor {
     public boolean direita;
     public boolean esquerda;
     public boolean esc = false;
-    private Player player;
 
-    public Entrada(Player player){
-        this.player = player;
-    }
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.UP || keycode == Input.Keys.W) {

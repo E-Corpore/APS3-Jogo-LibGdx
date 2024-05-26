@@ -13,14 +13,14 @@ public class Colisao {
     public Colisao(Player player){
         this.player = player;
     }
-    private void atualizarPosicao(Player player){
+    private void atualizarPosicao(){
         xDireira = ((int)player.getX()+player.getLargura())/128;
         xEsquerda = ((int)player.getX())/128;
         yInferior = (int)player.getY()/128;
         ySuperior = ((int)player.getY()+34)/128;
     }
     public boolean cima(TiledMapTileLayer camada){
-        atualizarPosicao(player);
+        atualizarPosicao();
         int cellX1 = xEsquerda;
         int cellY1 = ySuperior;
         int cellX2 = xDireira;
@@ -28,7 +28,7 @@ public class Colisao {
         return colide(camada,cellX1,cellY1,cellX2,cellY2);
     }
     public boolean baixo(TiledMapTileLayer camada){
-        atualizarPosicao(player);
+        atualizarPosicao();
         int cellX1 = xEsquerda;
         int cellY1 = yInferior;
         int cellX2 = xDireira;
@@ -36,7 +36,7 @@ public class Colisao {
         return colide(camada,cellX1,cellY1,cellX2,cellY2);
     }
     public boolean esquerda(TiledMapTileLayer camada){
-        atualizarPosicao(player);
+        atualizarPosicao();
         int cellX1 = xEsquerda;
         int cellY1 = yInferior;
         int cellX2 = xEsquerda;
@@ -44,7 +44,7 @@ public class Colisao {
         return colide(camada,cellX1,cellY1,cellX2,cellY2);
     }
     public boolean direita(TiledMapTileLayer camada){
-        atualizarPosicao(player);
+        atualizarPosicao();
         int cellX1 = xDireira;
         int cellY1 = yInferior;
         int cellX2 = xDireira;

@@ -9,7 +9,6 @@ public class Player extends SpriteBatch{
 
     private Animation animation;
     private float x=1432,y=1965;
-    private float anteriorX=1432,anteriorY=1965;
     private Direcao direcao;
     private boolean correndo = false;
     private int velocidade;
@@ -28,21 +27,41 @@ public class Player extends SpriteBatch{
     public float getX() {
         return x;
     }
-    public void andarX(float v) {
-        this.anteriorX = this.x;
-        this.x = x+v;
-    }
     public float getY() {
         return y;
     }
-
-    public void andarY(float v) {
-        this.anteriorY = this.y;
-        this.y = y+ v;
+    public void mover(){
+        switch (this.direcao){
+            case BAIXO:
+                this.y -= velocidade;
+                break;
+            case CIMA:
+                this.y += velocidade;
+                break;
+            case ESQUERDA:
+                this.x -= velocidade;
+                break;
+            case DIREITA:
+                this.x += velocidade;
+                break;
+        }
     }
     public void recuar(){
-        this.x = anteriorX;
-        this.y = anteriorY;
+        animation.setFrameDuration(0f);
+        switch (this.direcao){
+            case BAIXO:
+                this.y ++;
+                break;
+            case CIMA:
+                this.y --;
+                break;
+            case ESQUERDA:
+                this.x ++;
+                break;
+            case DIREITA:
+                this.x --;
+                break;
+        }
     }
     public Animation getAnimation() {
         return animation;
