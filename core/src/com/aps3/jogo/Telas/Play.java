@@ -52,11 +52,6 @@ public class Play implements Screen{
     private float elapsedTime = 0f;
     Entrada entrada;
     private int largura,altura;
-    //private float cameraX,cameraY;
-    private boolean foraBordaCima;
-    private boolean foraBordaBaixo;
-    private boolean foraBordaDireita;
-    private boolean foraBordaEsquerda;
 
     //variaveis para detectar colisão
     private TiledMapTileLayer camadaColisao;
@@ -78,19 +73,16 @@ public class Play implements Screen{
     // Adicionar lixos no mapa
     private List<Lixo> lixos;
     private PosicaoLixo posicaoLixos;
-    private TiledMapTileLayer camadaLixos;
 
     // Adicionando mochila
-    private Mochila mochila;
+    Texture texturaMochila;
+    private Batch mochila;
     private List<Lixo> itensMochila;
 
     // Caçambas
     private List<Cacamba> cacambas;
     private Boolean cacambaAberta=false;
 
-    // Pontuação
-    private BitmapFont fonte;
-    private BitmapFont fonteNumeros;
     private Stage pontuacao;
     private Label labelTextoAcertos;
     private Label labelAcertos;
@@ -109,7 +101,6 @@ public class Play implements Screen{
     private Cacamba atualCacamba;
     private Label labelAtualCacamba;
     private Drawable drawableVazio;
-    private Drawable fundoBotaoLixo;
     private ImageButton lixo1;
     private ImageButton lixo2;
     private ImageButton lixo3;
@@ -172,16 +163,17 @@ public class Play implements Screen{
         btnReiniciar = new SpriteBatch();
 
         // Lixos
-        camadaLixos = (TiledMapTileLayer) map.getLayers().get("Lixos");
+        TiledMapTileLayer camadaLixos = (TiledMapTileLayer) map.getLayers().get("Lixos");
         posicaoLixos = new PosicaoLixo(camadaLixos);
         carregarLixos();
 
         // Mochila
-        mochila = new Mochila();
-        itensMochila = new ArrayList<Lixo>();
+        texturaMochila = new Texture("img/mochila.png");
+        mochila = new SpriteBatch();
+        itensMochila = new ArrayList<>();
 
         // Caçambas
-        cacambas = new ArrayList<Cacamba>();
+        cacambas = new ArrayList<>();
         cacambas.add(new Cacamba(METAL,10,16));
         cacambas.add(new Cacamba(PAPEL,13,16));
         cacambas.add(new Cacamba(PLASTICO,15,15));
@@ -189,8 +181,9 @@ public class Play implements Screen{
         cacambas.add(new Cacamba(ORGANICO,13,14));
 
         // Estilo de fonte
-        fonte = new BitmapFont(Gdx.files.internal("fonte/PartyConfettiRegular.fnt"));
-        fonteNumeros = new BitmapFont(Gdx.files.internal("fonte/numeros-mix-bit.fnt"));
+        // Pontuação
+        BitmapFont fonte = new BitmapFont(Gdx.files.internal("fonte/PartyConfettiRegular.fnt"));
+        BitmapFont fonteNumeros = new BitmapFont(Gdx.files.internal("fonte/numeros-mix-bit.fnt"));
         BitmapFont fonteGrande = new BitmapFont(Gdx.files.internal("fonte/mix-bit48.fnt"));
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -209,7 +202,7 @@ public class Play implements Screen{
         Texture texturaPlacar = new Texture(Gdx.files.internal("img/placar.png"));
 
         fundoPlacar = new Image(new TextureRegionDrawable(new TextureRegion(texturaPlacar)));
-        fundoPlacar.setBounds(largura/2-160, altura-40,320,40);
+        fundoPlacar.setBounds((float) largura /2-160, altura-40,320,40);
 
         pontuacao = new Stage(new ScreenViewport());
         labelTextoAcertos = new Label("Acertos",labelStyle);
@@ -218,11 +211,11 @@ public class Play implements Screen{
         labelErros = new Label("0", numerosStyle);
         labelX = new Label("X", labelStyle);
         labelQtdLixo = new Label("Lixos restantes: "+qtdLixo, labelStyle);
-        labelTextoAcertos.setBounds(largura/2-160,altura-40,80,40);
-        labelTextoErros.setBounds(largura/2+80,altura-40,80,40);
-        labelAcertos.setBounds(largura/2-80,altura-40,80,40);
-        labelX.setBounds(largura/2-9,altura-40,18,40);
-        labelErros.setBounds(largura/2,altura-40,80,40);
+        labelTextoAcertos.setBounds((float) largura /2-160,altura-40,80,40);
+        labelTextoErros.setBounds((float) largura /2+80,altura-40,80,40);
+        labelAcertos.setBounds((float) largura /2-80,altura-40,80,40);
+        labelX.setBounds((float) largura /2-9,altura-40,18,40);
+        labelErros.setBounds((float) largura /2,altura-40,80,40);
         labelQtdLixo.setBounds(largura-160,altura-40,160,40);
 
         labelTextoAcertos.setAlignment(Align.left);
@@ -248,7 +241,7 @@ public class Play implements Screen{
         Texture botaoLixoVazio = new Texture(Gdx.files.internal("img/tipo-lixo/nenhum.png"));
         Texture fundoTexturaLixo = new Texture(Gdx.files.internal("img/tipo-lixo/fundoBotaoLixo.png"));
         drawableVazio = new TextureRegionDrawable(botaoLixoVazio);
-        fundoBotaoLixo = new TextureRegionDrawable(fundoTexturaLixo);
+        Drawable fundoBotaoLixo = new TextureRegionDrawable(fundoTexturaLixo);
 
         labelAtualCacamba = new Label("", labelStyle);
         labelLixo1 = new Label("", labelStyle);
@@ -319,7 +312,7 @@ public class Play implements Screen{
         // Fim do jogo
         fimDoJogo = new Stage(new ScreenViewport());
         imageFimJogo = new Image(new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("img/fimJogo.png")))));
-        imageFimJogo.setBounds(largura/2-238, 120,475,664);
+        imageFimJogo.setBounds((float) largura /2-238, 120,475,664);
 
         labelLixosPlastico= new Label("Lixos de plastico: ", labelStyle);
         labelLixosOrganico= new Label("Lixos orgânicos: ", labelStyle);
@@ -327,11 +320,11 @@ public class Play implements Screen{
         labelLixosPapel= new Label("Lixos de papel: ", labelStyle);
         labelLixosVidro= new Label("Lixos de vidro: ", labelStyle);
 
-        labelLixosPlastico.setBounds(largura/2-100, 460,100,40);
-        labelLixosOrganico.setBounds(largura/2-100, 420,100,40);
-        labelLixosMetal.setBounds(largura/2-100, 380,100,40);
-        labelLixosPapel.setBounds(largura/2-100, 340,100,40);
-        labelLixosVidro.setBounds(largura/2-100, 300,100,40);
+        labelLixosPlastico.setBounds((float) largura /2-100, 460,100,40);
+        labelLixosOrganico.setBounds((float) largura /2-100, 420,100,40);
+        labelLixosMetal.setBounds((float) largura /2-100, 380,100,40);
+        labelLixosPapel.setBounds((float) largura /2-100, 340,100,40);
+        labelLixosVidro.setBounds((float) largura /2-100, 300,100,40);
 
         Texture TexturaBotaoMenu = new Texture(Gdx.files.internal("menu/btnMenuInicial.png"));
         Texture TexturaBotaoReiniciar = new Texture(Gdx.files.internal("menu/btnReiniciar.png"));
@@ -340,8 +333,8 @@ public class Play implements Screen{
 
         botaoMenu = new ImageButton(drawableMenu);
         botaoReiniciar = new ImageButton(drawableReiniciar);
-        botaoMenu.setPosition((largura/2)-194,150);
-        botaoReiniciar.setPosition((largura/2)+54,150);
+        botaoMenu.setPosition(((float) largura /2)-194,150);
+        botaoReiniciar.setPosition(((float) largura /2)+54,150);
 
         botaoMenu.addListener(new ClickListener() {
             @Override
@@ -358,12 +351,12 @@ public class Play implements Screen{
         fimAcertos = new Label("0", numerosStyle);
         fimErros = new Label("0", numerosStyle);
 
-        labelFim.setBounds(largura/2-50, 710,100,60);
+        labelFim.setBounds((float) largura /2-50, 710,100,60);
         labelFim.setAlignment(Align.center);
-        labelFimAcertos.setBounds(largura/2-100, 580,80,40);
-        fimAcertos.setBounds(largura/2+50, 580,80,40);
-        labelFimErros.setBounds(largura/2-100, 540,80,40);
-        fimErros.setBounds(largura/2+50, 540,80,40);
+        labelFimAcertos.setBounds((float) largura /2-100, 580,80,40);
+        fimAcertos.setBounds((float) largura /2+50, 580,80,40);
+        labelFimErros.setBounds((float) largura /2-100, 540,80,40);
+        fimErros.setBounds((float) largura /2+50, 540,80,40);
 
         fimDoJogo.addActor(imageFimJogo);
         fimDoJogo.addActor(labelFim);
@@ -393,27 +386,15 @@ public class Play implements Screen{
       pause = !pause; // Alterna o estado de pause
     }
     // Verifica se passou das bordas
-    {
-      if (playerYtela + player.getAltura() / 2 > altura * 2 / 3) {
-          foraBordaCima = true;
-      } else {
-          foraBordaCima = false;
-      }
-      if (playerYtela + player.getAltura() / 2 < altura / 3) {
-          foraBordaBaixo = true;
-      } else {
-          foraBordaBaixo = false;
-      }
-      if (playerXtela + player.getLargura() / 2 > largura * 2 / 3) {
-          foraBordaDireita = true;
-      } else {
-          foraBordaDireita = false;
-      }
-      if (playerXtela + player.getLargura() / 2 < largura / 3) {
-          foraBordaEsquerda = true;
-      } else {
-          foraBordaEsquerda = false;
-      }
+      boolean foraBordaCima;
+      boolean foraBordaBaixo;
+      boolean foraBordaDireita;
+      boolean foraBordaEsquerda;
+      {
+          foraBordaCima = playerYtela + (float) player.getAltura() / 2 > (float) (altura * 2) / 3;
+          foraBordaBaixo = playerYtela + (float) player.getAltura() / 2 < (float) altura / 3;
+          foraBordaDireita = playerXtela + (float) player.getLargura() / 2 > (float) (largura * 2) / 3;
+          foraBordaEsquerda = playerXtela + (float) player.getLargura() / 2 < (float) largura / 3;
     }
 
     //Movimento caso não esteja pausado
@@ -426,7 +407,7 @@ public class Play implements Screen{
                 player.andarY(player.getVelocidade());
             }else  {player.recuar();}
 
-            if (foraBordaCima && (player.getY() + player.getAltura() / 2 < (4096 - altura / 3))) {
+            if (foraBordaCima && ((player.getY() + (float) player.getAltura() / 2) < (4096 - ((float) altura / 3)))) {
                 camera.translate(0, player.getVelocidade());
                 camera.update();
                 player.setProjectionMatrix(camera.combined);
@@ -440,7 +421,7 @@ public class Play implements Screen{
                  player.andarY(-player.getVelocidade());
             }else {player.recuar();}
 
-            if (foraBordaBaixo && (player.getY() + player.getAltura() / 2) > (altura / 3)) {
+            if (foraBordaBaixo && (player.getY() + (float) player.getAltura() / 2) > ((float) altura / 3)) {
                 camera.translate(0, -player.getVelocidade());
                 camera.update();
                 player.setProjectionMatrix(camera.combined);
@@ -454,7 +435,7 @@ public class Play implements Screen{
                 player.andarX(-player.getVelocidade());
             }else {player.recuar();}
 
-            if (foraBordaEsquerda && (player.getX() + player.getLargura() / 2) > (largura / 3)) {
+            if (foraBordaEsquerda && (player.getX() + (float) player.getLargura() / 2) > ((float) largura / 3)) {
                 camera.translate(-player.getVelocidade(), 0);
                 camera.update();
                 player.setProjectionMatrix(camera.combined);
@@ -468,7 +449,7 @@ public class Play implements Screen{
                 player.andarX(player.getVelocidade());
             }else {player.recuar();}
 
-            if (foraBordaDireita && (player.getX() + player.getLargura() / 2 < (4096 - largura / 3))) {
+            if (foraBordaDireita && (player.getX() + (float) player.getLargura() / 2 < (4096 - (float) largura / 3))) {
                 camera.translate(player.getVelocidade(), 0);
                 camera.update();
                 player.setProjectionMatrix(camera.combined);
@@ -496,17 +477,14 @@ public class Play implements Screen{
     }
     // Desenha os lixos
     for(Lixo lixo:lixos){
-      //System.out.println(lixo.getX() +" - "+lixo.getY());
       lixo.begin();
       lixo.draw(lixo.getImagem(), lixo.getX(), lixo.getY(),36,36);
       lixo.end();
-      //camera.update();
       lixo.setProjectionMatrix(camera.combined);
     }
 
     player.begin();
     player.draw((TextureRegion) player.getAnimation().getKeyFrame(elapsedTime,true), player.getX(), player.getY());
-    //player.draw(player.framePlayer(direcao,elapsedTime), player.getX(), player.getY());
     player.end();
 
     renderer.render(new int[]{13});
@@ -539,9 +517,19 @@ public class Play implements Screen{
       }
     }
 
+    // Desenhar quadrado
+    if (cacambaAberta || pause || fimJogo){
+      quadrado.begin();
+      quadrado.setColor(256, 256, 256, 0.4f);
+      quadrado.draw(transparencia, 0, 0, largura, altura);
+      quadrado.end();
+      podeAndar = false;
+    }else{
+      podeAndar = true;
+    }
 
     mochila.begin();
-    mochila.draw(mochila.getImagem(), largura/2-190, 20);
+    mochila.draw(texturaMochila, (float) largura /2-190, 20);
     mochila.end();
 
     // Desenha itens da mochila
@@ -552,16 +540,6 @@ public class Play implements Screen{
     }
     pontuacao.draw();
 
-    // Desenhar quadrado
-    if (cacambaAberta || pause || fimJogo){
-        quadrado.begin();
-        quadrado.setColor(256, 256, 256, 0.4f);
-        quadrado.draw(transparencia, 0, 0, largura, altura);
-        quadrado.end();
-        podeAndar = false;
-    }else{
-        podeAndar = true;
-    }
     // Desenhar quando abrir inventario
     if (cacambaAberta){
       quadradoInventario.begin();
@@ -586,7 +564,7 @@ public class Play implements Screen{
     }
 
     // Fim do jogo
-    if(Gdx.input.isKeyJustPressed(Input.Keys.Q)){
+    if(itensMochila.isEmpty() & qtdLixo<=0){
       fimJogo = true;
     }
     if (fimJogo){
@@ -598,11 +576,9 @@ public class Play implements Screen{
         labelLixosPlastico.setText("Lixos de plastico: "+cacambas.get(2).getLixosRecebidos());
         labelLixosVidro.setText("Lixos de vidro:    "+cacambas.get(3).getLixosRecebidos());
         labelLixosOrganico.setText("Lixos orgânicos:   "+cacambas.get(4).getLixosRecebidos());
-
         Gdx.input.setInputProcessor(fimDoJogo);
         fimDoJogo.draw();
     }
-
 
     if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) & pause){
       float mouseX = Gdx.input.getX();
@@ -616,7 +592,7 @@ public class Play implements Screen{
     }
   }
     private void carregarLixos(){
-        lixos = new ArrayList<Lixo>();
+        lixos = new ArrayList<>();
         for(int i =0;i<qtdLixo;i++){
             tipoLixo[] tlixo = tipoLixo.values();
             tipoLixo lixoAleatorio = tlixo[new Random().nextInt(tlixo.length)];
@@ -676,7 +652,7 @@ public class Play implements Screen{
         labelLixo4.setText("");
         labelLixo5.setText("");
 
-        if(itensMochila.size()>=1){
+        if(!itensMochila.isEmpty()){
             labelLixo1.setText(itensMochila.get(0).getNome());
             lixo1.getStyle().imageUp = new TextureRegionDrawable(itensMochila.get(0).getImagem());
         }
@@ -726,13 +702,13 @@ public class Play implements Screen{
         }
 
         pontuacao.getViewport().update(width, height, true);
-        labelTextoAcertos.setPosition(largura/2-145,altura-40);
-        labelTextoErros.setPosition(largura/2+65,altura-40);
-        labelAcertos.setPosition(largura/2-80,altura-40);
-        labelX.setPosition(largura/2-9,altura-40);
-        labelErros.setPosition(largura/2,altura-40);
+        labelTextoAcertos.setPosition((float) largura /2-145,altura-40);
+        labelTextoErros.setPosition((float) largura /2+65,altura-40);
+        labelAcertos.setPosition((float) largura /2-80,altura-40);
+        labelX.setPosition((float) largura /2-9,altura-40);
+        labelErros.setPosition((float) largura /2,altura-40);
         labelQtdLixo.setPosition(largura-160,altura-40);
-        fundoPlacar.setPosition(largura/2-160, altura-40);
+        fundoPlacar.setPosition((float) largura /2-160, altura-40);
 
 
         inventario.getViewport().update(width, height, true);
@@ -750,38 +726,28 @@ public class Play implements Screen{
         btnReiniciarY =(altura/4)-(texturaReiniciar.getWidth()/2);
 
         labelAtualCacamba.setPosition(largura-320,528);
-        //camera.position.x = width/
-        //System.out.println("L: "+largura+" A: "+altura);
 
         fimDoJogo.getViewport().update(width, height, true);
 
-        imageFimJogo.setPosition(largura/2-238, 120);
+        imageFimJogo.setPosition((float) largura /2-238, 120);
 
-        labelFim.setPosition(largura/2-50, 710);
-        labelFimAcertos.setPosition(largura/2-100, 580);
-        fimAcertos.setPosition(largura/2+50, 580);
-        labelFimErros.setPosition(largura/2-100, 540);
-        fimErros.setPosition(largura/2+50, 540);
+        labelFim.setPosition((float) largura /2-50, 710);
+        labelFimAcertos.setPosition((float) largura /2-100, 580);
+        fimAcertos.setPosition((float) largura /2+50, 580);
+        labelFimErros.setPosition((float) largura /2-100, 540);
+        fimErros.setPosition((float) largura /2+50, 540);
 
-        labelLixosPlastico.setPosition(largura/2-100, 460);
-        labelLixosOrganico.setPosition(largura/2-100, 420);
-        labelLixosMetal.setPosition(largura/2-100, 380);
-        labelLixosPapel.setPosition(largura/2-100, 340);
-        labelLixosVidro.setPosition(largura/2-100, 300);
+        labelLixosPlastico.setPosition((float) largura /2-100, 460);
+        labelLixosOrganico.setPosition((float) largura /2-100, 420);
+        labelLixosMetal.setPosition((float) largura /2-100, 380);
+        labelLixosPapel.setPosition((float) largura /2-100, 340);
+        labelLixosVidro.setPosition((float) largura /2-100, 300);
 
-        botaoMenu.setPosition((largura/2)-194,150);
-        botaoReiniciar.setPosition((largura/2)+54,150);
-
+        botaoMenu.setPosition(((float) largura /2)-194,150);
+        botaoReiniciar.setPosition(((float) largura /2)+54,150);
 
         camera.update();
-        /*
-        for(Lixo lixo:lixos){
-            lixo.setProjectionMatrix(camera.combined);
-        }
-
-         */
         player.setProjectionMatrix(camera.combined);
-        //playerX =
     }
 
     @Override

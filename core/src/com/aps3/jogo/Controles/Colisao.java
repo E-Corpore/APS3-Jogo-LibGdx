@@ -55,12 +55,7 @@ public class Colisao {
         TiledMapTileLayer.Cell celula1,celula2;
         celula1 = camada.getCell(x1,y1);
         celula2 = camada.getCell(x2,y2);
-        if ((celula1 != null) || (celula2 != null)){
-        //if (celula1 != null){
-            return true;
-        }else {
-            return false;
-        }
+        return (celula1 != null) || (celula2 != null);
     }
 
 }

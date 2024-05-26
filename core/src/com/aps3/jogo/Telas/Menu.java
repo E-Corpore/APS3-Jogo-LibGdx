@@ -9,30 +9,24 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 
 public class Menu implements Screen{
-    //private final Jogo jogo;
-    private Play play;
-    private Stage stage;
-    private Texture backgroundTexture;
-    private SpriteBatch batch;
-    private BitmapFont fonteBotoes;
+    private final Stage stage;
+    private final Texture backgroundTexture;
+    private final SpriteBatch batch;
 
     public Menu() {
 
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        fonteBotoes = new BitmapFont(Gdx.files.internal("fonte/mix-bit48.fnt"));
+        BitmapFont fonteBotoes = new BitmapFont(Gdx.files.internal("fonte/mix-bit48.fnt"));
 
         // Carregar a textura do fundo
         backgroundTexture = new Texture(Gdx.files.internal("menu/fundo-menu.jpeg"));
@@ -45,8 +39,6 @@ public class Menu implements Screen{
 
         // Carregar os botões
         TextButton playButton = new TextButton("Play", textButtonStyle);
-        TextButton skinButton = new TextButton("Skin", textButtonStyle);
-        TextButton lojaButton = new TextButton("Loja", textButtonStyle);
         TextButton tutorialButton = new TextButton("Tutorial", textButtonStyle);
         TextButton sairButton = new TextButton("Sair", textButtonStyle);
 
@@ -78,10 +70,6 @@ public class Menu implements Screen{
         table.center();
         table.add(playButton).padBottom(20);
         table.row();
-        //table.add(skinButton);
-        //table.row();
-        //table.add(lojaButton);
-        //table.row();
         table.add(tutorialButton);
         table.row();
         table.add(sairButton);
@@ -96,17 +84,10 @@ public class Menu implements Screen{
 
     @Override
     public void render(float delta) {
-
-
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        // Desenhar o fundo
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
-
-        // Desenhar o Stage
-        //stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }
 

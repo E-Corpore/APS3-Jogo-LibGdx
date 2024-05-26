@@ -10,25 +10,15 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class Tutorial implements Screen {
-    private Stage stage;
-    private Texture backgroundTexture;
-    private SpriteBatch batch;
-    private BitmapFont fonteTexto;
-    private Label labelDescricaoJogo;
-    private Label labelDescriçaoCacamba;
-    private ImageButton botaoVoltar;
-
-    private Image teclasWASD;
-    private Image teclasSetas;
-    private Image teclaEsc;
-    private Image teclaE;
-    private Image personagemLixeira;
-    private Image inventarioLixeira;
+    private final Stage stage;
+    private final Texture backgroundTexture;
+    private final SpriteBatch batch;
+    private final BitmapFont fonteTexto;
+    private final ImageButton botaoVoltar;
 
     public Tutorial(){
         stage = new Stage(new ScreenViewport());
@@ -39,29 +29,29 @@ public class Tutorial implements Screen {
         labelStyle.font = fonteTexto;
         labelStyle.fontColor = Color.WHITE;
 
-        String descriçaoJogo = "O principal objetivo do jogo é coletar todos os 50 lixos espalhados pela cidade e leva-los até sua devida caçamba."
+        String descricaoJogo = "O principal objetivo do jogo é coletar todos os 50 lixos espalhados pela cidade e leva-los até sua devida caçamba."
                 + "Cada lixo descartado de maneira correta você ganha um ponto em 'Acerto', caso contrario, você ganha um ponto em 'Erro'."
                 + "Caso você tenha mais acertos do que erros, você ganha o jogo. Veja os controles abaixo: ";
 
-        String descriçaoCacamba = "Ao abrir a caçamba, você deve clicar no lixo de seu inventário no container correspondente";
+        String descricaoCacamba = "Ao abrir a caçamba, você deve clicar no lixo de seu inventário no container correspondente";
 
-        labelDescricaoJogo = new Label(descriçaoJogo, labelStyle);
+        Label labelDescricaoJogo = new Label(descricaoJogo, labelStyle);
         labelDescricaoJogo.setWrap(true);
 
-        labelDescriçaoCacamba = new Label(descriçaoCacamba, labelStyle);
-        labelDescriçaoCacamba.setWrap(true);
+        Label labelDescricaoCacamba = new Label(descricaoCacamba, labelStyle);
+        labelDescricaoCacamba.setWrap(true);
 
         // Carregar a textura do fundo
         backgroundTexture = new Texture(Gdx.files.internal("menu/fundoTutorial.png"));
         batch = new SpriteBatch();
 
         // Carregando imagens
-        teclasWASD = new Image(new Texture(Gdx.files.internal("menu/teclasWASD.png")));
-        teclasSetas = new Image(new Texture(Gdx.files.internal("menu/teclasSetas.png")));
-        teclaEsc = new Image(new Texture(Gdx.files.internal("menu/teclaEsc.png")));
-        teclaE  = new Image(new Texture(Gdx.files.internal("menu/teclaE.png")));
-        personagemLixeira = new Image(new Texture(Gdx.files.internal("menu/personagemLixeira.png")));
-        inventarioLixeira = new Image(new Texture(Gdx.files.internal("menu/inventarioLixeira.png")));
+        Image teclasWASD = new Image(new Texture(Gdx.files.internal("menu/teclasWASD.png")));
+        Image teclasSetas = new Image(new Texture(Gdx.files.internal("menu/teclasSetas.png")));
+        Image teclaEsc = new Image(new Texture(Gdx.files.internal("menu/teclaEsc.png")));
+        Image teclaE = new Image(new Texture(Gdx.files.internal("menu/teclaE.png")));
+        Image personagemLixeira = new Image(new Texture(Gdx.files.internal("menu/personagemLixeira.png")));
+        Image inventarioLixeira = new Image(new Texture(Gdx.files.internal("menu/inventarioLixeira.png")));
 
         // Botão Voltar
         botaoVoltar = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("menu/btnVoltar.png"))));
@@ -105,20 +95,20 @@ public class Tutorial implements Screen {
         tiposLixeira.add(new Label("- Plástico",labelStyle)).pad(10);
         tiposLixeira.row();
         tiposLixeira.add(new Image(new Texture(Gdx.files.internal("img/cacamba/organico.png")))).width(48).height(48).pad(6);
-        tiposLixeira.add(new Label("- Organico",labelStyle)).pad(10);;
+        tiposLixeira.add(new Label("- Organico",labelStyle)).pad(10);
         tiposLixeira.row();
         tiposLixeira.add(new Image(new Texture(Gdx.files.internal("img/cacamba/metal.png")))).width(48).height(48).pad(6);
-        tiposLixeira.add(new Label("- Metal",labelStyle)).pad(10);;
+        tiposLixeira.add(new Label("- Metal",labelStyle)).pad(10);
         tiposLixeira.row();
         tiposLixeira.add(new Image(new Texture(Gdx.files.internal("img/cacamba/papel.png")))).width(48).height(48).pad(6);
-        tiposLixeira.add(new Label("- Papel",labelStyle)).pad(10);;
+        tiposLixeira.add(new Label("- Papel",labelStyle)).pad(10);
         tiposLixeira.row();
         tiposLixeira.add(new Image(new Texture(Gdx.files.internal("img/cacamba/vidro.png")))).width(48).height(48).pad(6);
-        tiposLixeira.add(new Label("- Vidro",labelStyle)).pad(10);;
+        tiposLixeira.add(new Label("- Vidro",labelStyle)).pad(10);
         tiposLixeira.row();
 
         table.add(inventarioLixeira).pad(10);
-        table.add(labelDescriçaoCacamba).colspan(2).pad(10).width(300);
+        table.add(labelDescricaoCacamba).colspan(2).pad(10).width(300);
         table.add(tiposLixeira);
         table.row();
 

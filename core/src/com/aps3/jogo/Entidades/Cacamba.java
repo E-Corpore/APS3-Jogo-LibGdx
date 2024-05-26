@@ -3,13 +3,13 @@ package com.aps3.jogo.Entidades;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 
 public class Cacamba extends SpriteBatch {
-    private int x,y;
+    private final int x;
+    private final int y;
     private tipoLixo tipo;
     private Texture texturaCacamba;
-    private Rectangle rectangle;
+    private final Rectangle rectangle;
     private String nome;
     private int lixosRecebidos;
 

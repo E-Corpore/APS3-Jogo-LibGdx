@@ -1,38 +1,29 @@
 package com.aps3.jogo.Entidades;
-
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.ScreenUtils;
-
 
 public class Player extends SpriteBatch{
-    private TextureAtlas atlasPlayer;
+    private final TextureAtlas atlasPlayer;
 
     private Animation animation;
-    private int largura=36,altura=68;
-    private float x=2328,y=1965;
-    private float anteriorX=2328,anteriorY=1965;
+    private float x=1432,y=1965;
+    private float anteriorX=1432,anteriorY=1965;
     private Direcao direcao;
     private boolean correndo = false;
     private int velocidade;
 
     public Player(){
-        atlasPlayer = new TextureAtlas(Gdx.files.internal("player.atlas"));
+        atlasPlayer = new TextureAtlas(Gdx.files.internal("personagem/player.atlas"));
         direcao = Direcao.BAIXO;
         setDirecao(direcao);
     }
     public int getAltura() {
-        return altura;
+        return 68;
     }
     public int getLargura() {
-        return largura;
+        return 36;
     }
     public float getX() {
         return x;
@@ -50,8 +41,8 @@ public class Player extends SpriteBatch{
         this.y = y+ v;
     }
     public void recuar(){
-        //this.x = anteriorX;
-        //this.y = anteriorY;
+        this.x = anteriorX;
+        this.y = anteriorY;
     }
     public Animation getAnimation() {
         return animation;
@@ -96,7 +87,6 @@ public class Player extends SpriteBatch{
     }
     public void setCorrendo(boolean correndo) {
         this.velocidade = correndo?4:2;
-        //this.animation.setFrameDuration(correndo?0.08f:0.16f);
         this.correndo = correndo;
     }
 }

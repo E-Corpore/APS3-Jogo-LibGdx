@@ -9,9 +9,9 @@ import java.util.Random;
 
 public class Lixo extends SpriteBatch{
     private Texture texturaLixo;
-    private tipoLixo tipo;
+    private final tipoLixo tipo;
     private Vector2 posicao= new Vector2();
-    private Rectangle rectangle;
+    private final Rectangle rectangle;
     private String nome;
 
     public Lixo(tipoLixo tipo, Vector2 posicao){
