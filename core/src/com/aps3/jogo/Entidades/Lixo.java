@@ -48,10 +48,10 @@ public class Lixo extends SpriteBatch{
             case PAPEL:
                 if (new Random().nextInt(2) == 0) {
                     this.texturaLixo = papel1;
-                    this.nome = "Jornais";
+                    this.nome = "Papel amassado";
                 }else {
                     this.texturaLixo = papel2;
-                    this.nome = "Embalagem de isopor";// É UM TIPO DE PLASTICO
+                    this.nome = "Caixa de leite";// É UM TIPO DE PLASTICO
                 }
                 break;
             case PLASTICO:

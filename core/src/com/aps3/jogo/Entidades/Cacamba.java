@@ -11,6 +11,7 @@ public class Cacamba extends SpriteBatch {
     private Texture texturaCacamba;
     private Rectangle rectangle;
     private String nome;
+    private int lixosRecebidos;
 
     public Cacamba(tipoLixo tipo,int x,int y) {
         this.tipo = tipo;
@@ -73,5 +74,11 @@ public class Cacamba extends SpriteBatch {
     }
     public void setTipo(tipoLixo tipo) {
         this.tipo = tipo;
+    }
+    public void setLixosRecebidos() {
+        this.lixosRecebidos++;
+    }
+    public int getLixosRecebidos() {
+        return lixosRecebidos;
     }
 }
